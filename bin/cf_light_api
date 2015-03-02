@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+puts '[cf_light_api] Starting CF Light API and worker...'
+
+require_relative '../lib/cf_light_api/redis.rb'
+require_relative '../lib/cf_light_api/worker.rb'
+
+require 'sinatra'
+require 'sinatra/cf_light_api'
+
+set :run, true
