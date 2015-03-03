@@ -98,7 +98,7 @@ The worker basically gets all the data we want from the real API every 5 mins, p
 ```
 Then run `bundle install`.
 
-3. You should now be able to start the CF Light API and worker by running `./cf_light_api`.
+3. You should now be able to start the CF Light API and worker by running `cf_light_api`.
 
 ## Deploying to CloudFoundry
 
