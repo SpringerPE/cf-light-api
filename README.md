@@ -76,7 +76,7 @@ An array of JSON documents, for all organisations in your CF environment. Each d
 
 ## Worker
 
-The worker basically gets all the data we want from the real API every 5 mins, puts in Redis and sleeps. The worker runs in a background thread via the Rufus Scheduler and is automatically started as part of the API.
+The worker basically gets all the data we want from the real API every 5 mins, puts in Redis and sleeps. The worker runs in a background thread via the Rufus Scheduler and is automatically started as part of the API. There is basic locking implemented via Redis to allow you to run multiple instances of `cf_light_api` alongside one another, without duplicating work.
 
 ## Usage
 

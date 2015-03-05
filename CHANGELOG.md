@@ -1,3 +1,9 @@
+## 1.1.0 (Mar 5, 2014)
+
+Features:
+
+  - Added locking to the worker, to allow multiple instances of `cf_light_api` to run alongside one another, without duplicating work.
+
 ## 1.0.0 (Mar 2, 2014)
 
 Features:
