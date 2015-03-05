@@ -8,34 +8,61 @@ require 'rufus-scheduler'
 end
 
 scheduler = Rufus::Scheduler.new
-scheduler.every '5m', :first_in => '5s', :overlap => false do
+scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
+  begin
+    if locked?
+      puts "[cf_light_api:worker] Data update is already running in another worker, skipping..."
+      next
+    end
 
-  puts "[cf_light_api:worker] Updating data..."
+    lock
 
-  cf_client = get_client()
+    puts "[cf_light_api:worker] Updating data..."
 
-  org_data = []
-  app_data = []
-  cf_client.organizations.each do |org|
-    # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
+    cf_client = get_client()
 
-    org_data << {
-      :name => org.name,
-      :quota => {
-        :total_services => org.quota_definition.total_services,
-        :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
+    org_data = []
+    app_data = []
+    cf_client.organizations.each do |org|
+      # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
+      org_data << {
+        :name => org.name,
+        :quota => {
+          :total_services => org.quota_definition.total_services,
+          :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
+        }
       }
-    }
 
-    org.spaces.each do |space|
-      space.apps.each do |app|
-        app_data << format_app_data(app, org.name, space.name)
+      org.spaces.each do |space|
+        puts "processing space #{space.name}..."
+        space.apps.each do |app|
+          puts "processing app #{app.name}..."
+          app_data << format_app_data(app, org.name, space.name)
+        end
       end
     end
-  end
-  put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
-  put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
 
+    unlock
+
+    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
+    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
+
+  rescue Rufus::Scheduler::TimeoutError
+    puts '[cf_light_api:worker] Data update took too long and was aborted...'
+  end
+end
+
+def locked?
+  REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:lock") ? true : false
+end
+
+def lock
+  REDIS.set "#{ENV['REDIS_KEY_PREFIX']}:lock", true
+  REDIS.expire "#{ENV['REDIS_KEY_PREFIX']}:lock", 900
+end
+
+def unlock
+  REDIS.del "#{ENV['REDIS_KEY_PREFIX']}:lock"
 end
 
 def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF_PASSWORD'])
@@ -57,9 +84,9 @@ def format_app_data(app, org_name, space_name)
   additional_data = {}
   begin
     additional_data = {
-      :running   => app.running?,
-      :instances => app.running? ? app.stats.map{|key, value| value} : [],
-      :error     => nil
+     :running   => app.running?,
+     :instances => app.running? ? app.stats.map{|key, value| value} : [],
+     :error     => nil
     }
   rescue => e
     puts "[cf_light_api:worker] #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
