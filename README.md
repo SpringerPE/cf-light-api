@@ -118,3 +118,19 @@ applications:
 ```
 
 2. Then simply `cf push` when logged in to your CF environment.
+
+## Development
+
+Source hosted at [GitHub](https://github.com/springerpe/cf-light-api).
+Report issues and feature requests on [GitHub Issues](https://github.com/springerpe/cf-light-api/issues).
+
+### Note on Patches / Pull Requests
+
+ * Fork the project.
+ * Make your feature addition or bug fix, ideally committing to a topic branch.
+ * Please document your changes in the README, but don't change the version, or changelog.
+ * Send a pull request.
+
+## Copyright
+
+Copyright (c) Springer. See [LICENSE](https://github.com/springerpe/cf-light-api/blob/master/LICENSE) for details.
