@@ -1,3 +1,9 @@
+## 1.1.1 (Mar 6, 2014)
+
+Features:
+
+  - Logs the duration of the worker update process after each run.
+
 ## 1.1.0 (Mar 5, 2014)
 
 Features:
