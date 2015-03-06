@@ -16,6 +16,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
     end
 
     lock
+    start_time = Time.now
 
     puts "[cf_light_api:worker] Updating data..."
 
@@ -34,9 +35,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
       }
 
       org.spaces.each do |space|
-        puts "processing space #{space.name}..."
         space.apps.each do |app|
-          puts "processing app #{app.name}..."
           app_data << format_app_data(app, org.name, space.name)
         end
       end
@@ -46,6 +45,8 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
 
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
+
+    puts "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
 
   rescue Rufus::Scheduler::TimeoutError
     puts '[cf_light_api:worker] Data update took too long and was aborted...'
@@ -103,4 +104,11 @@ end
 def put_in_redis(key, data)
   puts "[cf_light_api:worker] Putting data #{data} into redis key #{key}"
   REDIS.set key, data.to_json
+end
+
+def format_duration(elapsed_seconds)
+  seconds = elapsed_seconds % 60
+  minutes = (elapsed_seconds / 60) % 60
+  hours   = elapsed_seconds / (60 * 60)
+  format("%02d hrs, %02d mins, %02d secs", hours, minutes, seconds)
 end
