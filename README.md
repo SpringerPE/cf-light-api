@@ -1,5 +1,7 @@
 # CF Light API
 
+[![Gem Version](https://badge.fury.io/rb/cf_light_api.svg)](http://badge.fury.io/rb/cf_light_api)
+
 ## What is this?
 
 A super lightweight API for CloudFoundry. Why? Well the CF API contains all sorts of relations making it very heavy to query.
