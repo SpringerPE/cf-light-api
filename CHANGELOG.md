@@ -1,3 +1,13 @@
+## 1.2.0 (Mar 9, 2015)
+
+Features:
+
+  - Parallelised the background worker, to speed up metrics gathering. With our test CF org containing around 125 apps, the worker now takes around 30-40 seconds, instead of over 5 minutes to complete.
+
+Bugfixes:
+
+  - Handles `CFoundry::AppNotFound` exceptions, which can occur when an app is terminated whilst we're trying to retrieve it's usage statistics.
+
 ## 1.1.1 (Mar 6, 2015)
 
 Features:
