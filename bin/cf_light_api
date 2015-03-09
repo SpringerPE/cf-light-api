@@ -8,4 +8,5 @@ require_relative '../lib/cf_light_api/worker.rb'
 require 'sinatra'
 require 'sinatra/cf_light_api'
 
+set :traps, false
 set :run, true
