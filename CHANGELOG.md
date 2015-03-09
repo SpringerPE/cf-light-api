@@ -1,16 +1,16 @@
-## 1.1.1 (Mar 6, 2014)
+## 1.1.1 (Mar 6, 2015)
 
 Features:
 
   - Logs the duration of the worker update process after each run.
 
-## 1.1.0 (Mar 5, 2014)
+## 1.1.0 (Mar 5, 2015)
 
 Features:
 
   - Added locking to the worker, to allow multiple instances of `cf_light_api` to run alongside one another, without duplicating work.
 
-## 1.0.0 (Mar 2, 2014)
+## 1.0.0 (Mar 2, 2015)
 
 Features:
   
@@ -18,6 +18,6 @@ Features:
   - Re-packaged as a Ruby Gem and released on RubyGems.org.
   - More detailed documentation for endpoints.
 
-## Not versioned (Feb 18th, 2014)
+## Not versioned (Feb 18th, 2015)
 
 Initial release.
