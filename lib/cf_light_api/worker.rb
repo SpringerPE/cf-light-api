@@ -1,6 +1,7 @@
 require 'cfoundry'
 require 'json'
 require 'rufus-scheduler'
+require 'parallel'
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
   puts "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
@@ -24,22 +25,29 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
 
     org_data = []
     app_data = []
-    cf_client.organizations.each do |org|
+    org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
       # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
-      org_data << {
+      { 
         :name => org.name,
         :quota => {
           :total_services => org.quota_definition.total_services,
           :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
         }
       }
+    end.flatten
 
-      org.spaces.each do |space|
-        space.apps.each do |app|
-          app_data << format_app_data(app, org.name, space.name)
+    app_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+      Parallel.map( org.spaces, :in_processes => 4) do |space|
+        Parallel.map( space.apps, :in_processes => 4) do |app|
+          begin
+            # It's possible for an app to have been terminated before this stage is reached.
+            format_app_data(app, org.name, space.name)
+          rescue CFoundry::AppNotFound
+            next
+          end
         end
       end
-    end
+    end.flatten
 
     unlock
 
