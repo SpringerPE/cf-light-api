@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+$stdout.sync = true
+
 puts '[cf_light_api] Starting CF Light API and worker...'
 
 require_relative '../lib/cf_light_api/redis.rb'
