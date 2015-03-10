@@ -1,3 +1,10 @@
+## 1.2.1 (Mar 10, 2015)
+
+Bugfixes:
+
+  - Fixed an issue where the scheduled job timeout in the worker did not match the lock expiry.
+  - Disabled STDOUT output buffering, which made debugging harder in certain deployment environments.
+
 ## 1.2.0 (Mar 9, 2015)
 
 Features:
