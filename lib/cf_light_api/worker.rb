@@ -9,7 +9,7 @@ require 'parallel'
 end
 
 scheduler = Rufus::Scheduler.new
-scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
+scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
     if locked?
       puts "[cf_light_api:worker] Data update is already running in another worker, skipping..."
@@ -36,9 +36,9 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '15m' do
       }
     end.flatten
 
-    app_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
-      Parallel.map( org.spaces, :in_processes => 4) do |space|
-        Parallel.map( space.apps, :in_processes => 4) do |app|
+    app_data = Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
+      Parallel.map(org.spaces, :in_processes => 4) do |space|
+        Parallel.map(space.apps, :in_processes => 4) do |app|
           begin
             # It's possible for an app to have been terminated before this stage is reached.
             format_app_data(app, org.name, space.name)
