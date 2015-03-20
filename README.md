@@ -13,11 +13,21 @@ This gem provides a single binary `cf_light_api`, which starts a small Sinatra a
 
 ## API Endpoints
 
-The API just reads a stringified JSON from Redis and serves it under the following endpoints:
+The API just reads a stringified JSON from Redis and serves it under the following endpoints.
 
-### /v1/apps
+## Apps
 
-An array of JSON documents, for all applications running in every Org and Space in your CF environment. Each document has the following structure:
+`GET /v1/apps`
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `org` | `string` | (Optional) Filter the applications by organisation name |
+
+### Response
+
+An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to show only applications belonging to the given `org`. Each document has the following structure:
 
 ```json
 {
@@ -60,7 +70,11 @@ An array of JSON documents, for all applications running in every Org and Space 
 **Note:** The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
 Memory and disk quota and usage figures are given in Bytes.
 
-### /v1/orgs
+## Organisations
+
+`GET /v1/orgs`
+
+### Response
 
 An array of JSON documents, for all organisations in your CF environment. Each document has the following structure:
 

@@ -1,3 +1,9 @@
+## 1.3.0 (Mar 20, 2015)
+
+Features:
+
+  - Implemented filtering by organisation name in the `/v1/apps` endpoint.
+
 ## 1.2.1 (Mar 10, 2015)
 
 Bugfixes:
