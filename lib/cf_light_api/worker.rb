@@ -86,6 +86,7 @@ def format_app_data(app, org_name, space_name)
     :name      => app.name,
     :org       => org_name,
     :space     => space_name,
+    :stack     => app.stack.name,
     :routes    => app.routes.map {|route| route.name},
     :data_from => Time.now.to_i,
   }
