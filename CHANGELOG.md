@@ -1,3 +1,9 @@
+## 1.3.1 (Apr 28, 2015)
+
+Features:
+
+  - The `stack` attribute is now shown for all apps.
+
 ## 1.3.0 (Mar 20, 2015)
 
 Features:

@@ -35,6 +35,7 @@ An array of JSON documents for all applications in the configured CF environment
   "name": "app_name",
   "org": "org name",
   "space": "space name",
+  "stack": "lucid64",
   "routes": [
     "app_name.yourdomain.com"
   ],
