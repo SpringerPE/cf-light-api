@@ -13,12 +13,6 @@ lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
-    if locked?
-      puts "[cf_light_api:worker] Data update is already running in another worker, skipping..."
-      next
-    end
-
-    lock
     start_time = Time.now
 
     puts "[cf_light_api:worker] Updating data..."
@@ -51,7 +45,6 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
       end
     end.flatten
 
-    unlock
 
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
@@ -61,19 +54,6 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   rescue Rufus::Scheduler::TimeoutError
     puts '[cf_light_api:worker] Data update took too long and was aborted...'
   end
-end
-
-def locked?
-  REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:lock") ? true : false
-end
-
-def lock
-  REDIS.set "#{ENV['REDIS_KEY_PREFIX']}:lock", true
-  REDIS.expire "#{ENV['REDIS_KEY_PREFIX']}:lock", 900
-end
-
-def unlock
-  REDIS.del "#{ENV['REDIS_KEY_PREFIX']}:lock"
 end
 
 def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF_PASSWORD'])
