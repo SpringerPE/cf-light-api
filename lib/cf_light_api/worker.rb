@@ -114,7 +114,6 @@ def format_app_data(app, org_name, space_name)
 end
 
 def put_in_redis(key, data)
-  @logger.info "Putting data #{data} into redis key #{key}"
   REDIS.set key, data.to_json
 end
 
