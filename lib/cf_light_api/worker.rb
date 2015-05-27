@@ -34,7 +34,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
 
         @logger.info "Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
-
+        lock_manager.unlock(lock)
       else
         @logger.info "Update already running in another thread!"
       end
