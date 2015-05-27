@@ -13,7 +13,7 @@ lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
-    lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 2000) do |lock|
+    lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
       if lock
         start_time = Time.now
 
