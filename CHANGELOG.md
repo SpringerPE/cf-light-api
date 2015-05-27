@@ -1,3 +1,14 @@
+## 1.3.2 (May 27, 2015)
+
+Features:
+
+  - Implemented worker locking via `redlock` gem.
+  - Improved worker logging and refactored code for clarity.
+
+Bugfixes:
+
+  - Fixes issue #6 "Occasional 'null' entries in JSON response".
+
 ## 1.3.1 (Apr 28, 2015)
 
 Features:
