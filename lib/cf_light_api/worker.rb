@@ -35,12 +35,14 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
 
         @logger.info "Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
         lock_manager.unlock(lock)
+        cf_client.logout
       else
         @logger.info "Update already running in another thread!"
       end
     end
   rescue Rufus::Scheduler::TimeoutError
     @logger.info 'Data update took too long and was aborted...'
+    cf_client.logout
   end
 end
 
