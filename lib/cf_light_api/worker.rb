@@ -2,82 +2,87 @@ require 'cfoundry'
 require 'json'
 require 'rufus-scheduler'
 require 'parallel'
+require 'redlock'
+require 'logger'
+
+@logger = Logger.new(STDOUT)
+@logger.formatter = proc do |severity, datetime, progname, msg|
+   "#{datetime} [cf_light_api:worker]: #{msg}\n"
+end
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
-  puts "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
+  @logger.info "Error: please set the '#{env}' environment variable." unless ENV[env]
   next
 end
 
+lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
-    if locked?
-      puts "[cf_light_api:worker] Data update is already running in another worker, skipping..."
-      next
-    end
+    lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
+      if lock
+        start_time = Time.now
 
-    lock
-    start_time = Time.now
+        @logger.info "Updating data..."
 
-    puts "[cf_light_api:worker] Updating data..."
+        cf_client = get_client()
 
-    cf_client = get_client()
+        org_data = get_org_data(cf_client)
+        app_data = get_app_data(cf_client)
 
-    org_data = []
-    app_data = []
-    org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
-      # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
-      { 
-        :name => org.name,
-        :quota => {
-          :total_services => org.quota_definition.total_services,
-          :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
-        }
-      }
-    end.flatten
+        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
+        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
 
-    app_data = Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
-      Parallel.map(org.spaces, :in_processes => 4) do |space|
-        Parallel.map(space.apps, :in_processes => 4) do |app|
-          begin
-            # It's possible for an app to have been terminated before this stage is reached.
-            format_app_data(app, org.name, space.name)
-          rescue CFoundry::AppNotFound
-            next
-          end
-        end
+        @logger.info "Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
+        lock_manager.unlock(lock)
+        cf_client.logout
+      else
+        @logger.info "Update already running in another thread!"
       end
-    end.flatten
-
-    unlock
-
-    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
-    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
-
-    puts "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
-
+    end
   rescue Rufus::Scheduler::TimeoutError
-    puts '[cf_light_api:worker] Data update took too long and was aborted...'
+    @logger.info 'Data update took too long and was aborted...'
+    cf_client.logout
   end
-end
-
-def locked?
-  REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:lock") ? true : false
-end
-
-def lock
-  REDIS.set "#{ENV['REDIS_KEY_PREFIX']}:lock", true
-  REDIS.expire "#{ENV['REDIS_KEY_PREFIX']}:lock", 900
-end
-
-def unlock
-  REDIS.del "#{ENV['REDIS_KEY_PREFIX']}:lock"
 end
 
 def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF_PASSWORD'])
   client = CFoundry::Client.get(cf_api)
   client.login({:username => cf_user, :password => cf_password})
   client
+end
+
+def get_app_data(cf_client)
+  Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
+    org_name = org.name
+    Parallel.map(org.spaces, :in_processes => 4) do |space|
+      space_name = space.name
+      @logger.info "Getting app data for apps in #{org_name}:#{space_name}..."
+      Parallel.map(space.apps, :in_processes => 4) do |app|
+        begin
+          # It's possible for an app to have been terminated before this stage is reached.
+          format_app_data(app, org_name, space_name)
+        rescue CFoundry::AppNotFound
+          next
+        end
+      end
+    end
+  end.flatten.compact
+end
+
+def get_org_data(cf_client)
+  Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+    org_name = org.name
+    @logger.info "Getting org data for #{org_name}..."
+    # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
+    {
+      :name => org_name,
+      :quota => {
+        :total_services => org.quota_definition.total_services,
+        :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
+      }
+    }
+  end.flatten.compact
 end
 
 def format_app_data(app, org_name, space_name)
@@ -99,7 +104,7 @@ def format_app_data(app, org_name, space_name)
      :error     => nil
     }
   rescue => e
-    puts "[cf_light_api:worker] #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
+    @logger.info "  #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
     additional_data = {
       :running   => 'error',
       :instances => [],
@@ -111,7 +116,6 @@ def format_app_data(app, org_name, space_name)
 end
 
 def put_in_redis(key, data)
-  puts "[cf_light_api:worker] Putting data #{data} into redis key #{key}"
   REDIS.set key, data.to_json
 end
 
