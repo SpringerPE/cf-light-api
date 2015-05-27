@@ -67,7 +67,7 @@ def get_app_data(cf_client)
         end
       end
     end
-  end.flatten
+  end.flatten.compact
 end
 
 def get_org_data(cf_client)
@@ -82,7 +82,7 @@ def get_org_data(cf_client)
         :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
       }
     }
-  end.flatten
+  end.flatten.compact
 end
 
 def format_app_data(app, org_name, space_name)
