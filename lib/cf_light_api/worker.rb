@@ -19,32 +19,8 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
 
     cf_client = get_client()
 
-    org_data = []
-    app_data = []
-    org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
-      # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
-      {
-        :name => org.name,
-        :quota => {
-          :total_services => org.quota_definition.total_services,
-          :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
-        }
-      }
-    end.flatten
-
-    app_data = Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
-      Parallel.map(org.spaces, :in_processes => 4) do |space|
-        Parallel.map(space.apps, :in_processes => 4) do |app|
-          begin
-            # It's possible for an app to have been terminated before this stage is reached.
-            format_app_data(app, org.name, space.name)
-          rescue CFoundry::AppNotFound
-            next
-          end
-        end
-      end
-    end.flatten
-
+    org_data = get_org_data(cf_client)
+    app_data = get_app_data(cf_client)
 
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
     put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
@@ -60,6 +36,34 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
   client = CFoundry::Client.get(cf_api)
   client.login({:username => cf_user, :password => cf_password})
   client
+end
+
+def get_app_data(cf_client)
+      app_data = Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
+      Parallel.map(org.spaces, :in_processes => 4) do |space|
+        Parallel.map(space.apps, :in_processes => 4) do |app|
+          begin
+            # It's possible for an app to have been terminated before this stage is reached.
+            format_app_data(app, org.name, space.name)
+          rescue CFoundry::AppNotFound
+            next
+          end
+        end
+      end
+    end.flatten
+end
+
+def get_org_data(cf_client)
+  org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+      # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
+      {
+        :name => org.name,
+        :quota => {
+          :total_services => org.quota_definition.total_services,
+          :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
+        }
+      }
+    end.flatten
 end
 
 def format_app_data(app, org_name, space_name)
