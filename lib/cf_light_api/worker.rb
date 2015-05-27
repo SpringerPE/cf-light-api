@@ -2,12 +2,14 @@ require 'cfoundry'
 require 'json'
 require 'rufus-scheduler'
 require 'parallel'
+require 'redlock'
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
   puts "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
   next
 end
 
+lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
@@ -27,7 +29,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
     app_data = []
     org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
       # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
-      { 
+      {
         :name => org.name,
         :quota => {
           :total_services => org.quota_definition.total_services,
