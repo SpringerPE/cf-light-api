@@ -15,7 +15,6 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
     lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 2000) do |lock|
       if lock
-
         start_time = Time.now
 
         puts "[cf_light_api:worker] Updating data..."
@@ -33,6 +32,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
       else
         puts "[cf_light_api:worker] Update already running in another thread!"
       end
+    end
   rescue Rufus::Scheduler::TimeoutError
     puts '[cf_light_api:worker] Data update took too long and was aborted...'
   end
