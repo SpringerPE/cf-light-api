@@ -52,11 +52,14 @@ end
 
 def get_app_data(cf_client)
   app_data = Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
+    org_name = org.name
     Parallel.map(org.spaces, :in_processes => 4) do |space|
+      space_name = space.name
+      @logger.info "Getting app data for apps in #{org_name}:#{space_name}..."
       Parallel.map(space.apps, :in_processes => 4) do |app|
         begin
           # It's possible for an app to have been terminated before this stage is reached.
-          format_app_data(app, org.name, space.name)
+          format_app_data(app, org_name, space_name)
         rescue CFoundry::AppNotFound
           next
         end
@@ -67,9 +70,11 @@ end
 
 def get_org_data(cf_client)
   org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+    org_name = org.name
+    @logger.info "Getting org data for #{org_name}..."
     # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
     {
-      :name => org.name,
+      :name => org_name,
       :quota => {
         :total_services => org.quota_definition.total_services,
         :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024
