@@ -3,6 +3,12 @@ require 'json'
 require 'rufus-scheduler'
 require 'parallel'
 require 'redlock'
+require 'logger'
+
+@logger = Logger.new(STDOUT)
+@logger.formatter = proc do |severity, datetime, progname, msg|
+   "#{datetime} [cf_light_api:worker]: #{msg}\n"
+end
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
   puts "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
