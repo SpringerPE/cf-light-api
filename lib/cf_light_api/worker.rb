@@ -13,20 +13,26 @@ lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
   begin
-    start_time = Time.now
+    lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 2000) do |lock|
+      if lock
 
-    puts "[cf_light_api:worker] Updating data..."
+        start_time = Time.now
 
-    cf_client = get_client()
+        puts "[cf_light_api:worker] Updating data..."
 
-    org_data = get_org_data(cf_client)
-    app_data = get_app_data(cf_client)
+        cf_client = get_client()
 
-    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
-    put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
+        org_data = get_org_data(cf_client)
+        app_data = get_app_data(cf_client)
 
-    puts "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
+        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
+        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
 
+        puts "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
+
+      else
+        puts "[cf_light_api:worker] Update already running in another thread!"
+      end
   rescue Rufus::Scheduler::TimeoutError
     puts '[cf_light_api:worker] Data update took too long and was aborted...'
   end
