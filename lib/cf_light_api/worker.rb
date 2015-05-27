@@ -11,7 +11,7 @@ require 'logger'
 end
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
-  puts "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
+  @logger.info "[cf_light_api:worker] Error: please set the '#{env}' environment variable." unless ENV[env]
   next
 end
 
@@ -23,7 +23,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
       if lock
         start_time = Time.now
 
-        puts "[cf_light_api:worker] Updating data..."
+        @logger.info "[cf_light_api:worker] Updating data..."
 
         cf_client = get_client()
 
@@ -33,14 +33,14 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
 
-        puts "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
+        @logger.info "[cf_light_api:worker] Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
 
       else
-        puts "[cf_light_api:worker] Update already running in another thread!"
+        @logger.info "[cf_light_api:worker] Update already running in another thread!"
       end
     end
   rescue Rufus::Scheduler::TimeoutError
-    puts '[cf_light_api:worker] Data update took too long and was aborted...'
+    @logger.info '[cf_light_api:worker] Data update took too long and was aborted...'
   end
 end
 
@@ -67,6 +67,7 @@ end
 
 def get_org_data(cf_client)
   org_data = Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+    @logger.info "hello!"
     # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
     {
       :name => org.name,
@@ -97,7 +98,7 @@ def format_app_data(app, org_name, space_name)
      :error     => nil
     }
   rescue => e
-    puts "[cf_light_api:worker] #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
+    @logger.info "[cf_light_api:worker] #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
     additional_data = {
       :running   => 'error',
       :instances => [],
@@ -109,7 +110,7 @@ def format_app_data(app, org_name, space_name)
 end
 
 def put_in_redis(key, data)
-  puts "[cf_light_api:worker] Putting data #{data} into redis key #{key}"
+  @logger.info "[cf_light_api:worker] Putting data #{data} into redis key #{key}"
   REDIS.set key, data.to_json
 end
 
