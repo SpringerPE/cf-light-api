@@ -136,6 +136,12 @@ applications:
 
 2. Then simply `cf push` when logged in to your CF environment.
 
+## Parallelism
+
+The worker collects the data using parallel processes to speed up the processes. By default, it will use 4 parallel processes for each of three nested maps. You can change the number by setting the following environment variable:
+
+`export PARALLEL_MAPS=6`
+
 ## Development
 
 Source hosted at [GitHub](https://github.com/springerpe/cf-light-api).

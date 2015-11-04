@@ -15,15 +15,18 @@ end
   next
 end
 
+PARALLEL_MAPS = ENV['PARALLEL_MAPS'].to_i || 4
+
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
 scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
+  cf_client = nil
   begin
     lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
       if lock
         start_time = Time.now
 
-        @logger.info "Updating data..."
+        @logger.info "Updating data in parallel (#{PARALLEL_MAPS})..."
 
         cf_client = get_client()
 
@@ -53,12 +56,12 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
 end
 
 def get_app_data(cf_client)
-  Parallel.map(cf_client.organizations, :in_processes => 4) do |org|
+  Parallel.map(cf_client.organizations, :in_processes => PARALLEL_MAPS) do |org|
     org_name = org.name
-    Parallel.map(org.spaces, :in_processes => 4) do |space|
+    Parallel.map(org.spaces, :in_processes => PARALLEL_MAPS) do |space|
       space_name = space.name
       @logger.info "Getting app data for apps in #{org_name}:#{space_name}..."
-      Parallel.map(space.apps, :in_processes => 4) do |app|
+      Parallel.map(space.apps, :in_processes => PARALLEL_MAPS) do |app|
         begin
           # It's possible for an app to have been terminated before this stage is reached.
           format_app_data(app, org_name, space_name)
@@ -71,7 +74,7 @@ def get_app_data(cf_client)
 end
 
 def get_org_data(cf_client)
-  Parallel.map( cf_client.organizations, :in_processes => 4) do |org|
+  Parallel.map( cf_client.organizations, :in_processes => PARALLEL_MAPS) do |org|
     org_name = org.name
     @logger.info "Getting org data for #{org_name}..."
     # The CFoundry client returns memory_limit in MB, so we need to normalise to Bytes to match the Apps.
