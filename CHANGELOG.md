@@ -1,3 +1,9 @@
+## 1.3.4 (Nov 4, 2015)
+
+Features:
+
+  - Sets a key in Redis showing the last update time.
+
 ## 1.3.3 (Nov 4, 2015)
 
 Features:
