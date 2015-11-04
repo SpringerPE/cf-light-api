@@ -1,3 +1,9 @@
+## 1.3.3 (Nov 4, 2015)
+
+Features:
+
+  - Made the number of parallel map processes configurable.
+
 ## 1.3.2 (May 27, 2015)
 
 Features:
