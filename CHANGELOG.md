@@ -1,3 +1,9 @@
+## 1.3.5 (Nov 6, 2015)
+
+Bugfixes:
+
+  - The default number of parallel map processes was being set incorrectly.
+
 ## 1.3.4 (Nov 4, 2015)
 
 Features:
