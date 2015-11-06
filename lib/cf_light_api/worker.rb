@@ -15,7 +15,7 @@ end
   next
 end
 
-PARALLEL_MAPS = ENV['PARALLEL_MAPS'].to_i || 4
+PARALLEL_MAPS = (ENV['PARALLEL_MAPS'] || 4).to_i
 
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
