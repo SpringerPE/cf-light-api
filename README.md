@@ -93,7 +93,7 @@ An array of JSON documents, for all organisations in your CF environment. Each d
 
 ### Last Updated
 
-`GET /v1/last_updates`
+`GET /v1/last_updated`
 
 ####
 
@@ -165,7 +165,7 @@ The default is to update data every 5 minutes, with a 5 minute timeout. You can 
 `export UPDATE_INTERVAL='10m'`
 `export UPDATE_TIMEOUT='7m'`
 
-Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/rufus-scheduler) durations will work here, for example `30s` or `1m` or `1d`.
+Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/rufus-scheduler) durations will work here, for example `30s`, `1m` or `1d`.
 
 ## Development
 
