@@ -15,18 +15,25 @@ end
   next
 end
 
-PARALLEL_MAPS = (ENV['PARALLEL_MAPS'] || 4).to_i
+PARALLEL_MAPS   = (ENV['PARALLEL_MAPS']   || 4   ).to_i
+UPDATE_INTERVAL = (ENV['UPDATE_INTERVAL'] || '5m').to_s
+UPDATE_TIMEOUT  = (ENV['UPDATE_TIMEOUT']  || '5m').to_s
 
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
 scheduler = Rufus::Scheduler.new
-scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
+
+@logger.info "Parallel maps:   '#{PARALLEL_MAPS}'"
+@logger.info "Update interval: '#{UPDATE_INTERVAL}'"
+@logger.info "Update timeout:  '#{UPDATE_TIMEOUT}'"
+
+scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout => UPDATE_TIMEOUT do
   cf_client = nil
   begin
     lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
       if lock
         start_time = Time.now
 
-        @logger.info "Updating data in parallel (#{PARALLEL_MAPS})..."
+        @logger.info "Updating data in parallel..."
 
         cf_client = get_client()
 
@@ -41,7 +48,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
         lock_manager.unlock(lock)
         cf_client.logout
       else
-        @logger.info "Update already running in another thread!"
+        @logger.info "Update already running in another instance!"
       end
     end
   rescue Rufus::Scheduler::TimeoutError
