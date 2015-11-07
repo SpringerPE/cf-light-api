@@ -20,6 +20,11 @@ module Sinatra
         content_type :json
         REDIS.get "#{ENV['REDIS_KEY_PREFIX']}:orgs"
       end
+
+      app.get '/v1/last_updated' do
+        content_type :json
+        REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:last_updated")
+      end
     end
 
   end
