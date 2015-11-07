@@ -46,6 +46,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
     end
   rescue Rufus::Scheduler::TimeoutError
     @logger.info 'Data update took too long and was aborted...'
+    lock_manager.unlock(lock)
     cf_client.logout
   end
 end
