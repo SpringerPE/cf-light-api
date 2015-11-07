@@ -35,7 +35,7 @@ scheduler.every '5m', :first_in => '5s', :overlap => false, :timeout => '5m' do
 
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
-        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:last_updated", Time.now
+        put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:last_updated", {:last_updated => Time.now}
 
         @logger.info "Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
         lock_manager.unlock(lock)
