@@ -1,3 +1,14 @@
+## 1.4.0 (Nov 7, 2015)
+
+Features:
+
+  - Implemented new endpoint `/v1/last_updated` which shows the last time the data was updated by the worker.
+  - Made the update interval and update timeout configurable.
+
+Bugfixes:
+
+  - Fixed an issue where the worker lock was not released when reaching the update timeout.
+
 ## 1.3.5 (Nov 6, 2015)
 
 Bugfixes:

@@ -15,17 +15,17 @@ This gem provides a single binary `cf_light_api`, which starts a small Sinatra a
 
 The API just reads a stringified JSON from Redis and serves it under the following endpoints.
 
-## Apps
+### Apps
 
 `GET /v1/apps`
 
-### Parameters
+#### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | `org` | `string` | (Optional) Filter the applications by organisation name |
 
-### Response
+#### Response
 
 An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to show only applications belonging to the given `org`. Each document has the following structure:
 
@@ -69,13 +69,13 @@ An array of JSON documents for all applications in the configured CF environment
 ```
 
 **Note:** The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
-Memory and disk quota and usage figures are given in Bytes.
+Memory, disk quota and usage figures are given in Bytes.
 
-## Organisations
+### Organisations
 
 `GET /v1/orgs`
 
-### Response
+#### Response
 
 An array of JSON documents, for all organisations in your CF environment. Each document has the following structure:
 
@@ -90,6 +90,20 @@ An array of JSON documents, for all organisations in your CF environment. Each d
 ```
 
 **Note:** Memory limits for each org are given in Bytes.
+
+### Last Updated
+
+`GET /v1/last_updates`
+
+####
+
+A single JSON document showing the last time the data was updated by the worker:
+
+```json
+{
+  "last_updated": "2015-11-07 01:25:28 +0000"
+}
+```
 
 ## Worker
 
@@ -136,11 +150,22 @@ applications:
 
 2. Then simply `cf push` when logged in to your CF environment.
 
-## Parallelism
+## Customisation
+
+### Parallel Processes
 
 The worker collects the data using parallel processes to speed up the processes. By default, it will use 4 parallel processes for each of three nested maps. You can change the number by setting the following environment variable:
 
 `export PARALLEL_MAPS=6`
+
+### Update Frequency and Timeout
+
+The default is to update data every 5 minutes, with a 5 minute timeout. You can modify this behaviour by setting the following environment variables:
+
+`export UPDATE_INTERVAL='10m'`
+`export UPDATE_TIMEOUT='7m'`
+
+Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/rufus-scheduler) durations will work here, for example `30s` or `1m` or `1d`.
 
 ## Development
 
