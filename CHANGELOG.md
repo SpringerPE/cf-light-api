@@ -1,3 +1,9 @@
+## 1.5.0 (Nov 9, 2015)
+
+Features:
+
+  - Retrieves the buildpack when formatting app data, where available.
+
 ## 1.4.0 (Nov 7, 2015)
 
 Features:

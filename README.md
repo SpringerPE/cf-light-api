@@ -36,6 +36,7 @@ An array of JSON documents for all applications in the configured CF environment
   "org": "org name",
   "space": "space name",
   "stack": "lucid64",
+  "buildpack": "https://github.com/cloudfoundry/ruby-buildpack.git",
   "routes": [
     "app_name.yourdomain.com"
   ],
@@ -68,8 +69,11 @@ An array of JSON documents for all applications in the configured CF environment
 }
 ```
 
-**Note:** The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
-Memory, disk quota and usage figures are given in Bytes.
+##### Notes
+
+* The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
+* Memory, disk quota and usage figures are given in bytes.
+* If the buildpack is not known, the `buildpack` attribute will be `null`.
 
 ### Organisations
 
@@ -89,7 +93,9 @@ An array of JSON documents, for all organisations in your CF environment. Each d
 }
 ```
 
-**Note:** Memory limits for each org are given in Bytes.
+##### Notes
+
+* Memory limits for each org are given in bytes.
 
 ### Last Updated
 
