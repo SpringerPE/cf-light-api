@@ -104,6 +104,7 @@ def format_app_data(app, org_name, space_name)
     :org       => org_name,
     :space     => space_name,
     :stack     => app.stack.name,
+    :buildpack => app.buildpack,
     :routes    => app.routes.map {|route| route.name},
     :data_from => Time.now.to_i,
   }
