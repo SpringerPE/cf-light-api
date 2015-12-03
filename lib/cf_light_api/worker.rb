@@ -4,6 +4,7 @@ require 'rufus-scheduler'
 require 'parallel'
 require 'redlock'
 require 'logger'
+require 'graphite-api'
 
 @logger = Logger.new(STDOUT)
 @logger.formatter = proc do |severity, datetime, progname, msg|
@@ -37,8 +38,10 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
 
         cf_client = get_client()
 
+        graphite = if ENV['GRAPHITE'] then GraphiteAPI.new(graphite: ENV['GRAPHITE']) end
+
         org_data = get_org_data(cf_client)
-        app_data = get_app_data(cf_client)
+        app_data = get_app_data(cf_client, graphite)
 
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", org_data
         put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", app_data
@@ -64,7 +67,22 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
   client
 end
 
-def get_app_data(cf_client)
+def send_data_to_graphite(data, graphite)
+  org = data[:org]
+  space = data[:space]
+  name = data[:name].sub ".", "_" # Some apps have dots in the app name
+
+  data[:instances].each_with_index do |instance_data, index|
+    instance_data[:stats][:usage].each do |key, value|
+      if key != :time
+        graphite_key = "cf_apps.#{org}.#{space}.#{name}.#{index}.#{key}"
+        graphite.metrics graphite_key => value
+      end
+    end
+  end
+end
+
+def get_app_data(cf_client, graphite)
   Parallel.map(cf_client.organizations, :in_processes => PARALLEL_MAPS) do |org|
     org_name = org.name
     Parallel.map(org.spaces, :in_processes => PARALLEL_MAPS) do |space|
@@ -73,7 +91,11 @@ def get_app_data(cf_client)
       Parallel.map(space.apps, :in_processes => PARALLEL_MAPS) do |app|
         begin
           # It's possible for an app to have been terminated before this stage is reached.
-          format_app_data(app, org_name, space_name)
+          formatted_app_data = format_app_data(app, org_name, space_name)
+          if graphite
+            send_data_to_graphite(formatted_app_data, graphite)
+          end
+          formatted_app_data
         rescue CFoundry::AppNotFound
           next
         end
