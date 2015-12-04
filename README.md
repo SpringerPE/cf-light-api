@@ -173,6 +173,15 @@ The default is to update data every 5 minutes, with a 5 minute timeout. You can 
 
 Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/rufus-scheduler) durations will work here, for example `30s`, `1m` or `1d`.
 
+### Send data to graphite
+If you have specified the env var GRAPHITE with a value like
+"graphiteserver.domain.com:2003" all the stats data will be sent
+there.
+
+```
+"cf_apps.#{org}.#{space}.#{name}.#{index}.{cpu, mem, disk}
+```
+
 ## Development
 
 Source hosted at [GitHub](https://github.com/springerpe/cf-light-api).
