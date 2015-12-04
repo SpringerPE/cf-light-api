@@ -2,7 +2,7 @@
 
 Features:
 
-  - Added support to send instance stats data to graphite
+  - Added support to send app instance stats data to Graphite.
 
 
 ## 1.5.0 (Nov 9, 2015)
