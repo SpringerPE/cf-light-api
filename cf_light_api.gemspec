@@ -1,4 +1,4 @@
-Gem::Specification.new 'cf_light_api', '1.6.0' do |s|
+Gem::Specification.new 'cf_light_api', '1.6.1' do |s|
   s.summary     = 'A super lightweight API for reading App and Org data from CloudFoundry, cached in Redis.'
   s.description = 'A super lightweight API for reading App and Org data from CloudFoundry, cached in Redis.'
 
@@ -17,5 +17,5 @@ Gem::Specification.new 'cf_light_api', '1.6.0' do |s|
   s.add_dependency 'rufus-scheduler', '~> 3.0.9'
   s.add_dependency 'sinatra',         '~> 1.4.5'
   s.add_dependency 'redlock',         '~> 0.1.1'
-  s.add_dependency 'graphite-api',    '-> 0.1.6'
+  s.add_dependency 'graphite-api',    '~> 0.1.6'
 end
