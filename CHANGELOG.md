@@ -1,3 +1,10 @@
+## 1.6.0 (Dec, 4, 2015)
+
+Features:
+  
+  - Added support to send instance stats data to graphite
+
+
 ## 1.5.0 (Nov 9, 2015)
 
 Features:
