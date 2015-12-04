@@ -29,6 +29,10 @@ scheduler = Rufus::Scheduler.new
 
 scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout => UPDATE_TIMEOUT do
   cf_client = nil
+
+  graphite = if ENV['GRAPHITE'] then GraphiteAPI.new(graphite: ENV['GRAPHITE']) end
+  @logger.info "Sending data to graphite server #{ENV['GRAPHITE']}" if graphite
+
   begin
     lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
       if lock
@@ -37,8 +41,6 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
         @logger.info "Updating data in parallel..."
 
         cf_client = get_client()
-
-        graphite = if ENV['GRAPHITE'] then GraphiteAPI.new(graphite: ENV['GRAPHITE']) end
 
         org_data = get_org_data(cf_client)
         app_data = get_app_data(cf_client, graphite)
