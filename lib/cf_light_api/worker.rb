@@ -21,7 +21,7 @@ UPDATE_INTERVAL = (ENV['UPDATE_INTERVAL'] || '5m').to_s
 UPDATE_TIMEOUT  = (ENV['UPDATE_TIMEOUT']  || '5m').to_s
 
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
-scheduler = Rufus::Scheduler.new
+scheduler    = Rufus::Scheduler.new
 
 @logger.info "Parallel maps:   '#{PARALLEL_MAPS}'"
 @logger.info "Update interval: '#{UPDATE_INTERVAL}'"
@@ -69,9 +69,9 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
 end
 
 def send_data_to_graphite(data, graphite)
-  org = data[:org]
+  org   = data[:org]
   space = data[:space]
-  name = data[:name].sub ".", "_" # Some apps have dots in the app name
+  name  = data[:name].sub ".", "_" # Some apps have dots in the app name
 
   data[:instances].each_with_index do |instance_data, index|
     graphite_base_key = "cf_apps.#{org}.#{space}.#{name}.#{index}"
