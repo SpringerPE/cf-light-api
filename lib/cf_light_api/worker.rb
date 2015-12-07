@@ -74,11 +74,16 @@ def send_data_to_graphite(data, graphite)
   name = data[:name].sub ".", "_" # Some apps have dots in the app name
 
   data[:instances].each_with_index do |instance_data, index|
-    instance_data[:stats][:usage].each do |key, value|
-      if key != :time
-        graphite_key = "cf_apps.#{org}.#{space}.#{name}.#{index}.#{key}"
-        graphite.metrics graphite_key => value
-      end
+    graphite_base_key = "cf_apps.#{org}.#{space}.#{name}.#{index}"
+
+    # Quota data
+    [:mem_quota, :disk_quota].each do |key|
+      graphite.metrics "#{graphite_base_key}.#{key}" => instance_data[:stats][key]
+    end
+
+    # Usage data
+    [:mem, :disk, :cpu].each do |key|
+      graphite.metrics "#{graphite_base_key}.#{key}" => instance_data[:stats][:usage][key]
     end
   end
 end
