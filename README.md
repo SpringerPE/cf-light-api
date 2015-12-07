@@ -178,7 +178,7 @@ Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/ruf
 If you have specified the environment variable `GRAPHITE` with a value like `graphiteserver.domain.com:2003` all the stats data for each app will be sent there. The Graphite schema will look like this:
 
 ```
-"cf_apps.#{org}.#{space}.#{name}.#{index}.{cpu, mem, disk}
+"cf_apps.#{org}.#{space}.#{name}.#{index}.#{cpu|mem|disk|mem_quota|disk_quota}
 ```
 
 ## Development
