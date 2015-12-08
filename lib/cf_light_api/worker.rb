@@ -12,8 +12,10 @@ require 'graphite-api'
 end
 
 ['CF_API', 'CF_USER', 'CF_PASSWORD'].each do |env|
-  @logger.info "Error: please set the '#{env}' environment variable." unless ENV[env]
-  next
+  unless ENV[env]
+    @logger.info "Error: please set the '#{env}' environment variable."
+    exit 1
+  end
 end
 
 PARALLEL_MAPS   = (ENV['PARALLEL_MAPS']   || 4   ).to_i
