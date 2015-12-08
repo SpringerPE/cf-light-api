@@ -21,17 +21,16 @@ UPDATE_INTERVAL = (ENV['UPDATE_INTERVAL'] || '5m').to_s
 UPDATE_TIMEOUT  = (ENV['UPDATE_TIMEOUT']  || '5m').to_s
 
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
-scheduler = Rufus::Scheduler.new
+scheduler    = Rufus::Scheduler.new
 
 @logger.info "Parallel maps:   '#{PARALLEL_MAPS}'"
 @logger.info "Update interval: '#{UPDATE_INTERVAL}'"
 @logger.info "Update timeout:  '#{UPDATE_TIMEOUT}'"
+@logger.info "Graphite server: #{ENV['GRAPHITE']}" if ENV['GRAPHITE']
 
 scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout => UPDATE_TIMEOUT do
   cf_client = nil
-
-  graphite = if ENV['GRAPHITE'] then GraphiteAPI.new(graphite: ENV['GRAPHITE']) end
-  @logger.info "Sending data to graphite server #{ENV['GRAPHITE']}" if graphite
+  graphite  = GraphiteAPI.new(graphite: ENV['GRAPHITE']) if ENV['GRAPHITE']
 
   begin
     lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
@@ -70,16 +69,21 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
 end
 
 def send_data_to_graphite(data, graphite)
-  org = data[:org]
+  org   = data[:org]
   space = data[:space]
-  name = data[:name].sub ".", "_" # Some apps have dots in the app name
+  name  = data[:name].sub ".", "_" # Some apps have dots in the app name
 
   data[:instances].each_with_index do |instance_data, index|
-    instance_data[:stats][:usage].each do |key, value|
-      if key != :time
-        graphite_key = "cf_apps.#{org}.#{space}.#{name}.#{index}.#{key}"
-        graphite.metrics graphite_key => value
-      end
+    graphite_base_key = "cf_apps.#{org}.#{space}.#{name}.#{index}"
+
+    # Quota data
+    [:mem_quota, :disk_quota].each do |key|
+      graphite.metrics "#{graphite_base_key}.#{key}" => instance_data[:stats][key]
+    end
+
+    # Usage data
+    [:mem, :disk, :cpu].each do |key|
+      graphite.metrics "#{graphite_base_key}.#{key}" => instance_data[:stats][:usage][key]
     end
   end
 end

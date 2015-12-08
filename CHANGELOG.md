@@ -1,9 +1,14 @@
-## 1.6.0 (Dec, 4, 2015)
+## 1.6.1 (Dec 8, 2015)
+
+Featues:
+
+- Included `memory_quota` and `disk_quota` to the metrics being sent to Graphite.
+
+## 1.6.0 (Dec 4, 2015)
 
 Features:
 
-  - Added support to send app instance stats data to Graphite.
-
+  - Added support to send app instance stats data (cpu, memory and disk) to Graphite.
 
 ## 1.5.0 (Nov 9, 2015)
 
