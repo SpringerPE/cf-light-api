@@ -1,3 +1,9 @@
+## 1.6.2 (Dec 8, 2015)
+
+Bugfixes:
+
+  - Ensure the worker exits with failure unless all required environment variables are set.
+
 ## 1.6.1 (Dec 8, 2015)
 
 Featues:
