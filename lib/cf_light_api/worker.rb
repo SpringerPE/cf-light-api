@@ -91,12 +91,12 @@ def send_data_to_graphite(data, graphite)
 end
 
 def get_app_data(cf_client, graphite)
-  Parallel.map(cf_client.organizations, :in_processes => PARALLEL_MAPS) do |org|
+  Parallel.map(cf_client.organizations, :in_threads=> PARALLEL_MAPS) do |org|
     org_name = org.name
-    Parallel.map(org.spaces, :in_processes => PARALLEL_MAPS) do |space|
+    Parallel.map(org.spaces, :in_threads => PARALLEL_MAPS) do |space|
       space_name = space.name
       @logger.info "Getting app data for apps in #{org_name}:#{space_name}..."
-      Parallel.map(space.apps, :in_processes => PARALLEL_MAPS) do |app|
+      Parallel.map(space.apps, :in_threads=> PARALLEL_MAPS) do |app|
         begin
           # It's possible for an app to have been terminated before this stage is reached.
           formatted_app_data = format_app_data(app, org_name, space_name)
@@ -113,7 +113,7 @@ def get_app_data(cf_client, graphite)
 end
 
 def get_org_data(cf_client)
-  Parallel.map( cf_client.organizations, :in_processes => PARALLEL_MAPS) do |org|
+  Parallel.map( cf_client.organizations, :in_threads=> PARALLEL_MAPS) do |org|
     org_name = org.name
     @logger.info "Getting org data for #{org_name}..."
     # The CFoundry client returns memory_limit in MB, so we need to normalise to bytes to match the Apps.

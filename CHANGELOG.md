@@ -1,3 +1,9 @@
+## 1.6.3 (Dec 23, 2015)
+
+Features:
+
+  - Use threads instead of processes to lower the memory consumption.
+
 ## 1.6.2 (Dec 8, 2015)
 
 Bugfixes:

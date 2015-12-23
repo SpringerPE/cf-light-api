@@ -160,7 +160,7 @@ applications:
 
 ### Parallel Processes
 
-The worker collects the data using parallel processes to speed up the processes. By default, it will use 4 parallel processes for each of three nested maps. You can change the number by setting the following environment variable:
+The worker collects the data using parallel threads to speed up the processes. By default, it will use 4 parallel threads for each of three nested maps. You can change the number by setting the following environment variable:
 
 `export PARALLEL_MAPS=6`
 
