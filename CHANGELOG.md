@@ -1,3 +1,9 @@
+## 1.6.4 (Jan 5, 2015)
+
+Features:
+
+  - Implement a /internal/status that returns a 503 if the data is older than 5 minutes, 200 otherwise.
+
 ## 1.6.3 (Dec 23, 2015)
 
 Features:
