@@ -23,21 +23,14 @@ module Sinatra
 
       app.get '/v1/last_updated' do
         content_type :json
-        REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:last_updated")
-      end
+        updated_json = REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:last_updated")
 
-      app.get '/internal/status' do
-        content_type :json
-        updated = REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:last_updated")
-        last_updated = JSON.parse(updated)
-        updated_datetime = DateTime.parse(last_updated["last_updated"])
-        seconds_since_update = ((DateTime.now - updated_datetime) * 24 * 60 * 60).to_i
-        if seconds_since_update >= 300
-          status 503
-        end
-        "{}"
-      end
+        last_updated         = DateTime.parse JSON.parse(updated_json)["last_updated"]
+        seconds_since_update = ((DateTime.now - last_updated) * 24 * 60 * 60).to_i
 
+        status 503 if seconds_since_update >= (ENV['DATA_AGE_VALIDITY'] || '600'.to_i)
+        return updated_json
+      end
     end
 
   end

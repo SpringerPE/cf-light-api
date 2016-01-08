@@ -19,7 +19,7 @@ end
 end
 
 PARALLEL_MAPS   = (ENV['PARALLEL_MAPS']   || 4   ).to_i
-UPDATE_INTERVAL = (ENV['UPDATE_INTERVAL'] || '5m').to_s
+UPDATE_INTERVAL = (ENV['UPDATE_INTERVAL'] || '5m').to_s # If you change the default '5m' here, also remember to change the default age validity in sinatra/cf_light_api.rb:31
 UPDATE_TIMEOUT  = (ENV['UPDATE_TIMEOUT']  || '5m').to_s
 
 lock_manager = Redlock::Client.new([ENV['REDIS_URI']])

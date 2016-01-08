@@ -111,6 +111,8 @@ A single JSON document showing the last time the data was updated by the worker:
 }
 ```
 
+If the data was not updated within a configurable time period, the HTTP status will be `503 Service Unavailable`.
+
 ## Worker
 
 The worker basically gets all the data we want from the real API every 5 mins, puts in Redis and sleeps. The worker runs in a background thread via the Rufus Scheduler and is automatically started as part of the API. There is basic locking implemented via Redis to allow you to run multiple instances of `cf_light_api` alongside one another, without duplicating work.
@@ -172,6 +174,14 @@ The default is to update data every 5 minutes, with a 5 minute timeout. You can 
 `export UPDATE_TIMEOUT='7m'`
 
 Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/rufus-scheduler) durations will work here, for example `30s`, `1m` or `1d`.
+
+If you change these settings, you will also need to adjust the data age validity, as described below.
+
+### Data Age Validity
+
+By default, the data is considered valid if it was last updated within 10 minutes (twice the default update interval). You can modify this behaviour by setting the following environment variable (in seconds):
+
+`export DATA_AGE_VALIDITY=3600`
 
 ### Send data to graphite
 
