@@ -1,3 +1,10 @@
+## 1.6.5 (Jan 8, 2016)
+
+Features:
+
+  - Made the data age validity configurable by setting the `DATA_AGE_VALIDITY` environment variable. It defaults to 10 minutes.
+  - Moved the functionality of the `/internal/status` into `/v1/last_updated` and removed the endpoint.
+
 ## 1.6.4 (Jan 5, 2015)
 
 Features:
