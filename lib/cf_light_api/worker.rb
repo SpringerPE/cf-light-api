@@ -5,7 +5,7 @@ require 'parallel'
 require 'redlock'
 require 'logger'
 require 'graphite-api'
-require 'time'
+require 'date'
 
 @logger = Logger.new(STDOUT)
 @logger.formatter = proc do |severity, datetime, progname, msg|
@@ -129,7 +129,7 @@ end
 
 def format_app_data(app, org_name, space_name)
 
-  last_uploaded = DateTime.parse app.manifest[:entity][:package_updated_at]
+  last_uploaded = (app.manifest[:entity][:package_updated_at] ||= nil)
 
   base_data = {
     :guid          => app.guid,
@@ -140,7 +140,7 @@ def format_app_data(app, org_name, space_name)
     :buildpack     => app.buildpack,
     :routes        => app.routes.map {|route| route.name},
     :data_from     => Time.now.to_i,
-    :last_uploaded => last_uploaded.strftime('%Y-%m-%d %T %z')
+    :last_uploaded => last_uploaded ? DateTime.parse(last_uploaded).strftime('%Y-%m-%d %T %z') : nil
   }
 
   additional_data = {}
@@ -151,7 +151,7 @@ def format_app_data(app, org_name, space_name)
      :error     => nil
     }
   rescue => e
-    @logger.info "  #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
+    # @logger.info "  #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
     additional_data = {
       :running   => 'error',
       :instances => [],
