@@ -40,7 +40,8 @@ An array of JSON documents for all applications in the configured CF environment
   "routes": [
     "app_name.yourdomain.com"
   ],
-  "data_from": "timestamp of last update",
+  "data_from": "unix timestamp of last update",
+  "last_uploaded": "2016-02-04 15:21:25 +0000",
   "running": true,
   "instances": [
     {

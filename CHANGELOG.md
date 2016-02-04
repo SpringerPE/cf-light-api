@@ -1,3 +1,9 @@
+## 1.6.6 (Feb 4, 2016)
+
+Features:
+
+  - Now includes the `last_uploaded` time when formatting app data, which shows when an app was last pushed.
+
 ## 1.6.5 (Jan 8, 2016)
 
 Features:
