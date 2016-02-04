@@ -1,3 +1,9 @@
+## 1.6.7 (Feb 4, 2016)
+
+Bugfixes:
+
+  - Some apps did not have a `last_uploaded` time, which is now being handled properly.
+
 ## 1.6.6 (Feb 4, 2016)
 
 Features:

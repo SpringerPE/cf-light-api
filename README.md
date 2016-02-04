@@ -75,6 +75,7 @@ An array of JSON documents for all applications in the configured CF environment
 * The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
 * Memory, disk quota and usage figures are given in bytes.
 * If the buildpack is not known, the `buildpack` attribute will be `null`.
+* If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
 
 ### Organisations
 
