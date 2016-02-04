@@ -5,6 +5,7 @@ require 'parallel'
 require 'redlock'
 require 'logger'
 require 'graphite-api'
+require 'time'
 
 @logger = Logger.new(STDOUT)
 @logger.formatter = proc do |severity, datetime, progname, msg|
@@ -127,15 +128,19 @@ def get_org_data(cf_client)
 end
 
 def format_app_data(app, org_name, space_name)
+
+  last_uploaded = DateTime.parse app.manifest[:entity][:package_updated_at]
+
   base_data = {
-    :guid      => app.guid,
-    :name      => app.name,
-    :org       => org_name,
-    :space     => space_name,
-    :stack     => app.stack.name,
-    :buildpack => app.buildpack,
-    :routes    => app.routes.map {|route| route.name},
-    :data_from => Time.now.to_i,
+    :guid          => app.guid,
+    :name          => app.name,
+    :org           => org_name,
+    :space         => space_name,
+    :stack         => app.stack.name,
+    :buildpack     => app.buildpack,
+    :routes        => app.routes.map {|route| route.name},
+    :data_from     => Time.now.to_i,
+    :last_uploaded => last_uploaded.strftime('%Y-%m-%d %T %z')
   }
 
   additional_data = {}
