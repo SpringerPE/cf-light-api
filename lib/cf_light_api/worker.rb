@@ -114,11 +114,11 @@ end
 
 def get_org_data(cf_client)
   Parallel.map( cf_client.organizations, :in_threads=> PARALLEL_MAPS) do |org|
-    org_name = org.name
-    @logger.info "Getting org data for #{org_name}..."
+    @logger.info "Getting org data for #{org.name}..."
     # The CFoundry client returns memory_limit in MB, so we need to normalise to bytes to match the Apps.
     {
-      :name => org_name,
+      :guid => org.guid,
+      :name => org.name,
       :quota => {
         :total_services => org.quota_definition.total_services,
         :memory_limit   => org.quota_definition.memory_limit * 1024 * 1024

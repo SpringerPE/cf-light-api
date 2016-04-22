@@ -5,9 +5,8 @@ module Sinatra
 
     def self.registered(app)
       app.get '/v1/apps/?:org?' do
-        all_apps = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:apps"))
-
         content_type :json
+        all_apps = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:apps"))
 
         if params[:org]
           return all_apps.select{|an_app| an_app['org'] == params[:org]}.to_json
@@ -16,9 +15,15 @@ module Sinatra
         return all_apps.to_json
       end
 
-      app.get '/v1/orgs/?' do
+      app.get '/v1/orgs/?:guid?' do
         content_type :json
-        REDIS.get "#{ENV['REDIS_KEY_PREFIX']}:orgs"
+        all_orgs = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:orgs"))
+
+        if params[:guid]
+          return all_orgs.select{|an_org| an_org['guid'] == params[:guid]}.to_json
+        end
+
+        return all_orgs.to_json
       end
 
       app.get '/v1/last_updated' do
