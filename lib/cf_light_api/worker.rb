@@ -151,7 +151,7 @@ def format_app_data(app, org_name, space_name)
      :error     => nil
     }
   rescue => e
-    # @logger.info "  #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
+    @logger.info "  #{org_name} #{space_name}: '#{app.name}'' error: #{e.message}"
     additional_data = {
       :running   => 'error',
       :instances => [],
