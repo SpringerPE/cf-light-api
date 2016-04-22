@@ -93,7 +93,7 @@ An array of JSON documents, for all organisations in your CF environment. If you
 
 ```json
 {
-  "guid": "org GUID"
+  "guid": "org GUID",
   "name": "my_org_name",
   "quota": {
     "total_services": 50,
