@@ -1,3 +1,10 @@
+## 1.7.0 (Apr 22, 2016)
+
+Features:
+
+  - Now includes the guid for each organisation when calling `/v2/orgs`
+  - Implemented filtering by organisation guid in the `/v1/orgs` endpoint.
+
 ## 1.6.7 (Feb 4, 2016)
 
 Bugfixes:

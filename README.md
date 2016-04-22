@@ -81,12 +81,19 @@ An array of JSON documents for all applications in the configured CF environment
 
 `GET /v1/orgs`
 
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `guid` | `string` | (Optional) Filter the organisations by GUID |
+
 #### Response
 
-An array of JSON documents, for all organisations in your CF environment. Each document has the following structure:
+An array of JSON documents, for all organisations in your CF environment. If you provide an `guid` parameter, the list will be filtered to show the organisation with the given `guid`. Each document has the following structure:
 
 ```json
 {
+  "guid": "org GUID"
   "name": "my_org_name",
   "quota": {
     "total_services": 50,
