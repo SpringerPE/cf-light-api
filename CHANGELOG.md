@@ -1,3 +1,22 @@
+## 2.0.0.pre1 (May 19, 2016)
+
+Work in progress, released as `pre1` for general testing before being finalised.
+
+Features:
+
+  - Large refactoring to replace the CFoundry ORM with simpler calls to the CF REST API instead.
+    - Avoids the nested parallel maps required previously to speed up data collection.
+    - Significantly reduces the number of requests being made against the CF API.
+    - More predictable / linear CF API usage, number of requests is essentially the same as the number of apps.
+
+Bugfixes:
+
+  - Fixes issue #12 "Undefined method 'call' when exiting the worker via 'ctrl+c'".
+
+Known Issues:
+
+  - 'Send to Graphite' functionality is not implemented in this pre-release.
+
 ## 1.7.0 (Apr 22, 2016)
 
 Features:
