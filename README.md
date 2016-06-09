@@ -214,4 +214,4 @@ Report issues and feature requests on [GitHub Issues](https://github.com/springe
 
 ## Copyright
 
-Copyright (c) Springer. See [LICENSE](https://github.com/springerpe/cf-light-api/blob/master/LICENSE) for details.
+Copyright (c) Springer Nature. See [LICENSE](https://github.com/springerpe/cf-light-api/blob/master/LICENSE) for details.
