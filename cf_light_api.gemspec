@@ -7,6 +7,7 @@ Gem::Specification.new 'cf_light_api', '2.0.0.pre1' do |s|
   s.homepage    = "https://github.com/springerpe/cf-light-api"
   s.license     = 'MIT'
   s.files       = [ './lib/sinatra/cf_light_api.rb',
+                    './lib/cf_light_api/lib.rb',
                     './lib/cf_light_api/redis.rb',
                     './lib/cf_light_api/worker.rb' ]
   s.executables = 'cf_light_api'
