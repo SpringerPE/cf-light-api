@@ -34,17 +34,16 @@ def send_instance_usage_data_to_graphite(instance_stats, org, space, app_name)
 
   instance_stats.each_with_index do |instance_data, index|
     graphite_base_key = "cf_apps.#{org}.#{space}.#{app_name}.#{index}"
-    @logger.info "Exporting app usage statistics to path '#{graphite_base_key}'"
+    @logger.info "  Exporting app instance \##{index} usage statistics to Graphite, path '#{graphite_base_key}'"
 
-    # graphite.metrics
     # Quota data
     ['mem_quota', 'disk_quota'].each do |key|
-      @logger.info "#{graphite_base_key}.#{key}" => instance_data['stats'][key]
+      @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats'][key]
     end
 
     # Usage data
     ['mem', 'disk', 'cpu'].each do |key|
-      @logger.info "#{graphite_base_key}.#{key}" => instance_data['stats']['usage'][key]
+      @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats']['usage'][key]
     end
   end
 end
