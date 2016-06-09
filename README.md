@@ -169,12 +169,6 @@ applications:
 
 ## Customisation
 
-### Parallel Processes
-
-The worker collects the data using parallel threads to speed up the processes. By default, it will use 4 parallel threads for each of three nested maps. You can change the number by setting the following environment variable:
-
-`export PARALLEL_MAPS=6`
-
 ### Update Frequency and Timeout
 
 The default is to update data every 5 minutes, with a 5 minute timeout. You can modify this behaviour by setting the following environment variables:
@@ -192,12 +186,17 @@ By default, the data is considered valid if it was last updated within 10 minute
 
 `export DATA_AGE_VALIDITY=3600`
 
-### Send data to graphite
+### Export data to Graphite
 
-If you have specified the environment variable `GRAPHITE` with a value like `graphiteserver.domain.com:2003` all the stats data for each app will be sent there. The Graphite schema will look like this:
+Usage statistics for each app instance can be exported to Graphite by setting the following environment variables:
+
+`export GRAPHITE_HOST=graphiteserver.domain.com`
+`export GRAPHITE_PORT=2003`
+
+If you have specified the The Graphite schema will look like this:
 
 ```
-"cf_apps.#{org}.#{space}.#{name}.#{index}.#{cpu|mem|disk|mem_quota|disk_quota}
+"cf_apps.#{org}.#{space}.#{app_name}.#{app_instance_index}.#{cpu|mem|disk|mem_quota|disk_quota}
 ```
 
 ## Development
