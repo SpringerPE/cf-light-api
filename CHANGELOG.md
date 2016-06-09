@@ -1,3 +1,15 @@
+## 2.0.0.pre2 (June 9, 2016)
+
+Work in progress, released as `pre2` for general testing before being finalised.
+
+Features:
+
+  - Restored the 'Send to Graphite' functionality, which was not implemented in `pre1`.
+
+Bugfixes:
+
+  - Fixes issue #11 "Apps with more than one dot in their name do not get properly substituted".
+
 ## 2.0.0.pre1 (May 19, 2016)
 
 Work in progress, released as `pre1` for general testing before being finalised.
