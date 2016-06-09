@@ -14,7 +14,6 @@ Gem::Specification.new 'cf_light_api', '2.0.0.pre1' do |s|
 
   s.add_dependency 'cfoundry',        '~> 4.7.1'
   s.add_dependency 'redis',           '~> 3.2.1'
-  s.add_dependency 'parallel',        '~> 1.4.1'
   s.add_dependency 'rufus-scheduler', '~> 3.0.9'
   s.add_dependency 'sinatra',         '~> 1.4.5'
   s.add_dependency 'redlock',         '~> 0.1.1'
