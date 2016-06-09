@@ -30,7 +30,7 @@ def get_client(cf_api=ENV['CF_API'], cf_user=ENV['CF_USER'], cf_password=ENV['CF
 end
 
 def send_instance_usage_data_to_graphite(instance_stats, org, space, app_name)
-  app_name.sub! ".", "_" # Some apps have dots in the app name
+  app_name.gsub! ".", "_" # Some apps have dots in the app name
 
   instance_stats.each_with_index do |instance_data, index|
     graphite_base_key = "cf_apps.#{org}.#{space}.#{app_name}.#{index}"
