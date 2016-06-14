@@ -1,3 +1,17 @@
+## 2.0.0 (June 14, 2016)
+
+Features:
+
+  - Large refactoring to replace the CFoundry ORM with simpler calls to the CF REST API instead.
+    - Avoids the nested parallel maps required previously to speed up data collection.
+    - Significantly reduces the number of requests being made against the CF API.
+    - More predictable / linear CF API usage, number of requests is essentially the same as the number of apps.
+
+Bugfixes:
+
+  - Fixes issue #11 "Apps with more than one dot in their name do not get properly substituted".
+  - Fixes issue #12 "Undefined method 'call' when exiting the worker via 'ctrl+c'".
+
 ## 2.0.0.pre2 (June 9, 2016)
 
 Work in progress, released as `pre2` for general testing before being finalised.
