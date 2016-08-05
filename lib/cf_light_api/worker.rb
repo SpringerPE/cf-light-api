@@ -63,6 +63,7 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
         @quotas    = cf_rest('/v2/quota_definitions?results-per-page=100')
         @spaces    = cf_rest('/v2/spaces?results-per-page=100')
         @stacks    = cf_rest('/v2/stacks?results-per-page=100')
+        @domains   = cf_rest('/v2/domains?results-per-page=100')
 
         formatted_orgs = @orgs.map do |org|
           quota = @quotas.find{|a_quota| a_quota['metadata']['guid'] == org['entity']['quota_definition_guid']}
@@ -81,9 +82,10 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
 
         formatted_apps = @apps.map do |app|
           # TODO: This is a bit repetative, could maybe improve?
-          space = @spaces.find{|a_space| a_space['metadata']['guid'] == app['entity']['space_guid']}
-          org   = @orgs.find{|an_org|     an_org['metadata']['guid'] == space['entity']['organization_guid']}
-          stack = @stacks.find{|a_stack| a_stack['metadata']['guid'] == app['entity']['stack_guid']}
+          space  = @spaces.find{|a_space| a_space['metadata']['guid'] == app['entity']['space_guid']}
+          org    = @orgs.find{|an_org|     an_org['metadata']['guid'] == space['entity']['organization_guid']}
+          stack  = @stacks.find{|a_stack| a_stack['metadata']['guid'] == app['entity']['stack_guid']}
+          routes = format_routes_for_app(app)
 
           running = (app['entity']['state'] == "STARTED")
 
@@ -91,6 +93,7 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
             :guid          => app['metadata']['guid'],
             :name          => app['entity']['name'],
             :org           => org['entity']['name'],
+            :routes        => routes,
             :space         => space['entity']['name'],
             :stack         => stack['entity']['name'],
             :buildpack     => app['entity']['buildpack'],
@@ -98,21 +101,16 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
             :last_uploaded => app['metadata']['updated_at'] ? DateTime.parse(app['metadata']['updated_at']).strftime('%Y-%m-%d %T %z') : nil
           }
 
-          # Add additional data, such as instance usage statistics, and routes - but this is only possible
-          # if the instance is running.
+          # Add additional data, such as instance usage statistics - but this is only possible if the instances are running.
           additional_data = {}
 
           begin
             instance_stats = []
-            routes         = []
             if running
-              # Finds the first running app instance that has a set of routes, in case there are stopped/crashed app instances that don't have any routes.
               instance_stats = formatted_instance_stats_for_app(app)
               running_instances = instance_stats.select{|instance| instance['stats']['uris'] if instance['state'] == 'RUNNING'}
-              raise "Unable to retrieve app routes - no app instances are running." if running_instances.empty?
+              raise "There are no running instances of this app." if running_instances.empty?
               
-              routes = running_instances.first['stats']['uris']
-
               if @graphite
                 send_instance_usage_data_to_graphite(instance_stats, org['entity']['name'], space['entity']['name'], app['entity']['name'])
               end
@@ -121,7 +119,6 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
             additional_data = {
              :running   => running,
              :instances => instance_stats,
-             :routes    => routes,
              :error     => nil
             }
 
@@ -133,7 +130,6 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
             additional_data = {
               :running   => 'error',
               :instances => [],
-              :routes    => [],
               :error     => e.message
             }
           end
