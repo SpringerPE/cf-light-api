@@ -90,15 +90,19 @@ scheduler.every UPDATE_INTERVAL, :first_in => '5s', :overlap => false, :timeout 
           running = (app['entity']['state'] == "STARTED")
 
           base_data = {
+            :buildpack     => app['entity']['buildpack'],
+            :data_from     => Time.now.to_i,
+            :diego         => app['entity']['diego'],
+            :docker        => app['entity']['docker_image'] ? true : false,
+            :docker_image  => app['entity']['docker_image'],
             :guid          => app['metadata']['guid'],
+            :last_uploaded => app['metadata']['updated_at'] ? DateTime.parse(app['metadata']['updated_at']).strftime('%Y-%m-%d %T %z') : nil,
             :name          => app['entity']['name'],
             :org           => org['entity']['name'],
             :routes        => routes,
             :space         => space['entity']['name'],
             :stack         => stack['entity']['name'],
-            :buildpack     => app['entity']['buildpack'],
-            :data_from     => Time.now.to_i,
-            :last_uploaded => app['metadata']['updated_at'] ? DateTime.parse(app['metadata']['updated_at']).strftime('%Y-%m-%d %T %z') : nil
+            :state         => app['entity']['state']
           }
 
           # Add additional data, such as instance usage statistics - but this is only possible if the instances are running.
