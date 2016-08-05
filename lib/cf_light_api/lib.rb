@@ -58,3 +58,16 @@ def format_duration(elapsed_seconds)
   hours   = elapsed_seconds / (60 * 60)
   format("%02d hrs, %02d mins, %02d secs", hours, minutes, seconds)
 end
+
+def format_routes_for_app app
+  routes = cf_rest app['entity']['routes_url']
+  routes.collect do |route|
+    host   = route['entity']['host']
+    path   = route['entity']['path']
+
+    domain = @domains.find{|a_domain| a_domain['metadata']['guid'] == route['entity']['domain_guid']}
+    domain = domain['entity']['name']
+
+    "#{host}.#{domain}#{path}"
+  end
+end
