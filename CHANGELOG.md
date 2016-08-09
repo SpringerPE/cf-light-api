@@ -1,3 +1,18 @@
+## 2.1.0 (August 9, 2016)
+
+Features:
+
+  - Improves routes gathering, so an application's routes are now available even if no instances of the app are running. Previously this would not have been possible, as the routes were being retrieved from a running app instance's `uri` attribute.
+  - Adds support for some additional attributes in the response to `/v1/apps`
+    * `diego`
+      A boolean showing whether the application is running on a Diego Cell.
+    * `docker`
+      A boolean showing whether the application was deployed from a Docker image.
+    * `docker_image`
+      A string showing the name of the Docker image used if `docker` is `true`, otherwise is set to `null`.
+    * `state`
+      The requested state as reported by Cloud Foundry, for example `STARTED`.
+
 ## 2.0.0 (June 14, 2016)
 
 Features:
