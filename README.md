@@ -37,11 +37,15 @@ An array of JSON documents for all applications in the configured CF environment
   "space": "space name",
   "stack": "lucid64",
   "buildpack": "https://github.com/cloudfoundry/ruby-buildpack.git",
+  "diego": false,
+  "docker": false,
+  "docker_image": null,
   "routes": [
     "app_name.yourdomain.com"
   ],
   "data_from": "unix timestamp of last update",
   "last_uploaded": "2016-02-04 15:21:25 +0000",
+  "state": "STARTED",
   "running": true,
   "instances": [
     {
@@ -76,6 +80,8 @@ An array of JSON documents for all applications in the configured CF environment
 * Memory, disk quota and usage figures are given in bytes.
 * If the buildpack is not known, the `buildpack` attribute will be `null`.
 * If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
+* The `diego` attribute is a boolean which will be `true` if the application is running on a Diego Cell, or `false` if running on a DEA Node. See the Cloud Foundry [docs](https://docs.cloudfoundry.org/concepts/diego/dea-vs-diego.html) for more information on these two architectures.
+* The `docker` attribute is a boolean which will be `true` if the application was deployed from a Docker image, or `false` if it was deployed using a buildpack. If `true`, the `docker_image` attribute will then show the Docker image used, otherwise it will be `null`.
 
 ### Organisations
 
