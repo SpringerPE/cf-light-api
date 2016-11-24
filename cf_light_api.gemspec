@@ -7,7 +7,6 @@ Gem::Specification.new 'cf_light_api', '2.1.0' do |s|
   s.homepage    = "https://github.com/springerpe/cf-light-api"
   s.license     = 'MIT'
   s.files       = [ './lib/sinatra/cf_light_api.rb',
-                    './lib/cf_light_api/lib.rb',
                     './lib/cf_light_api/redis.rb',
                     './lib/cf_light_api/worker.rb' ]
   s.executables = 'cf_light_api'
@@ -18,4 +17,5 @@ Gem::Specification.new 'cf_light_api', '2.1.0' do |s|
   s.add_dependency 'sinatra',         '~> 1.4.5'
   s.add_dependency 'redlock',         '~> 0.1.1'
   s.add_dependency 'graphite-api',    '~> 0.1.6'
+  s.add_dependency 'newrelic_rpm',    '~> 3.17.1'
 end

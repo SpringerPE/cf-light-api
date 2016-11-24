@@ -1,9 +1,15 @@
 require 'json'
 
+if ENV['NEW_RELIC_LICENSE_KEY']
+  require 'newrelic_rpm'
+  NewRelic::Agent.manual_start
+end
+
 module Sinatra
   module CfLightAPI
 
     def self.registered(app)
+
       app.get '/v1/apps/?:org?' do
         content_type :json
         all_apps = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:apps"))
