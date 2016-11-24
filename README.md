@@ -205,6 +205,15 @@ If you have specified the The Graphite schema will look like this:
 "cf_apps.#{org}.#{space}.#{app_name}.#{app_instance_index}.#{cpu|mem|disk|mem_quota|disk_quota}
 ```
 
+### New Relic Integration
+
+Instrumentation regarding the API and the backend worker can be made available in New Relic if you enable this integration by setting the following environment variables:
+
+```
+export NEW_RELIC_LICENSE_KEY=<license key goes here>
+export NEW_RELIC_APP_NAME="CF Light API"
+```
+
 ## Development
 
 Source hosted at [GitHub](https://github.com/springerpe/cf-light-api).
