@@ -1,3 +1,9 @@
+## 2.2.0.pre1 (November 24, 2016)
+
+Features:
+
+  - Instrumentation regarding the API and the backend worker is now available thanks to new integration with New Relic.
+
 ## 2.1.0 (August 9, 2016)
 
 Features:
