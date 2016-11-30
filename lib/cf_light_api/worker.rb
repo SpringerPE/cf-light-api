@@ -89,10 +89,10 @@ class CFLightAPIWorker
   end
 
   def send_instance_usage_data_to_graphite(instance_stats, org, space, app_name)
-    app_name.gsub! ".", "_" # Some apps have dots in the app name
+    sanitised_app_name = app_name.gsub ".", "_" # Some apps have dots in the app name
 
     instance_stats.each_with_index do |instance_data, index|
-      graphite_base_key = "cf_apps.#{org}.#{space}.#{app_name}.#{index}"
+      graphite_base_key = "cf_apps.#{org}.#{space}.#{sanitised_app_name}.#{index}"
       @logger.info "  Exporting app instance \##{index} usage statistics to Graphite, path '#{graphite_base_key}'"
 
       # Quota data
