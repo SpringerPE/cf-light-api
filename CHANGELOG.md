@@ -1,3 +1,9 @@
+## 2.2.1.pre1 (November 30, 2016)
+
+Bugfixes:
+
+  - Fix an issue with sanitising the app name for Graphite if it included `.`, which was also altering the app name when reported by the API itself.
+
 ## 2.2.0.pre1 (November 24, 2016)
 
 Features:
