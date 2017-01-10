@@ -46,7 +46,7 @@ class CFLightAPIWorker
     @logger.info "Update timeout:  '#{@update_timeout}'"
 
     if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT']
-      @logger.info "Graphite server: #{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}" 
+      @logger.info "Graphite server: #{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}"
     else
       @logger.info 'Graphite server: Disabled'
     end
@@ -68,9 +68,9 @@ class CFLightAPIWorker
 
     resources = []
     response = JSON.parse(@cf_client.base.rest_client.request(method, path)[1][:body])
-    
+
     # Some endpoints return a 'resources' array, others are flat, depending on the path.
-    if response['resources'] 
+    if response['resources']
       resources << response['resources']
     else
       resources << response
@@ -200,7 +200,7 @@ class CFLightAPIWorker
                 instance_stats = formatted_instance_stats_for_app(app)
                 running_instances = instance_stats.select{|instance| instance['stats']['uris'] if instance['state'] == 'RUNNING'}
                 raise "There are no running instances of this app." if running_instances.empty?
-                
+
                 if @graphite
                   send_instance_usage_data_to_graphite(instance_stats, org['entity']['name'], space['entity']['name'], app['entity']['name'])
                 end
