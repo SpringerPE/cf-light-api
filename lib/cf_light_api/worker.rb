@@ -26,9 +26,10 @@ class CFLightAPIWorker
       end
     end
 
-    # If either of the Graphite settings are set, verify that they are both set, or exit with an error.
+    # If either of the Graphite settings are set, verify that they are both set, or exit with an error. CF_ENV_NAME is used
+    # to prefix the Graphite key, to allow filtering by environment if you run more than one.
     if ENV['GRAPHITE_HOST'] or ENV['GRAPHITE_PORT']
-      ['GRAPHITE_HOST', 'GRAPHITE_PORT'].each do |env|
+      ['GRAPHITE_HOST', 'GRAPHITE_PORT', 'CF_ENV_NAME'].each do |env|
         unless ENV[env]
           @logger.info "Error: please set the '#{env}' environment variable to enable exporting to Graphite."
           exit 1
@@ -92,7 +93,7 @@ class CFLightAPIWorker
     sanitised_app_name = app_name.gsub ".", "_" # Some apps have dots in the app name which breaks the Graphite key path
 
     instance_stats.each_with_index do |instance_data, index|
-      graphite_base_key = "cf_apps.#{org}.#{space}.#{sanitised_app_name}.#{index}"
+      graphite_base_key = "cf_apps.#{ENV['CF_ENV_NAME']}.#{org}.#{space}.#{sanitised_app_name}.#{index}"
       @logger.info "  Exporting app instance \##{index} usage statistics to Graphite, path '#{graphite_base_key}'"
 
       # Quota data
@@ -133,7 +134,7 @@ class CFLightAPIWorker
 
   def update_cf_data
     @cf_client = nil
-    @graphite  = GraphiteAPI.new(graphite: "#{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}") if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT']
+    @graphite  = GraphiteAPI.new(graphite: "#{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}") if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT'] and ENV['CF_ENV_NAME']
 
     begin
       @lock_manager.lock("#{ENV['REDIS_KEY_PREFIX']}:lock", 5*60*1000) do |lock|
