@@ -1,3 +1,9 @@
+## 2.3.0 (January 11, 2017)
+
+Features:
+
+  - Changed the Graphite key path to include the CF environment name, so users with more than one Cloud Foundry deployment can group metrics by deployment.
+
 ## 2.2.1.pre1 (November 30, 2016)
 
 Bugfixes:
@@ -216,7 +222,7 @@ Features:
 ## 1.0.0 (Mar 2, 2015)
 
 Features:
-  
+
   - Added new `/v1/orgs` endpoint for listing all Organisations and their quotas.
   - Re-packaged as a Ruby Gem and released on RubyGems.org.
   - More detailed documentation for endpoints.
