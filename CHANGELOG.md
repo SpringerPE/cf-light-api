@@ -1,3 +1,9 @@
+## 2.4.0 (January 16, 2017)
+
+Features:
+
+  - Send organisation quota details to Graphite (when enabled).
+
 ## 2.3.0 (January 11, 2017)
 
 Features:
