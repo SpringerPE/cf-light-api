@@ -194,15 +194,17 @@ By default, the data is considered valid if it was last updated within 10 minute
 
 ### Export data to Graphite
 
-Usage statistics for each app instance can be exported to Graphite by setting the following environment variables:
+Usage statistics for each app instance and org quota details can be exported to Graphite by setting the following environment variables:
 
 `export GRAPHITE_HOST=graphiteserver.domain.com`
 `export GRAPHITE_PORT=2003`
+`export CF_ENV_NAME=live`
 
 If you have specified the The Graphite schema will look like this:
 
 ```
-"cf_apps.#{org}.#{space}.#{app_name}.#{app_instance_index}.#{cpu|mem|disk|mem_quota|disk_quota}
+"cf_apps.#{cf_env_name}.#{org_name}.#{space_name}.#{app_name}.#{app_instance_index}.#{cpu|mem|disk|mem_quota|disk_quota}"
+"cf_orgs.#{cf_env_name}.#{org_name}.quota.#{total_services|total_routes|memory_limit}"
 ```
 
 ### New Relic Integration
