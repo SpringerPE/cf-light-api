@@ -13,6 +13,8 @@ class CFLightAPIWorker
     include NewRelic::Agent::MethodTracer
   end
 
+  ENVIRONMENT_VARIABLES_WHITELIST = (ENV['ENVIRONMENT_VARIABLES_WHITELIST'] || '').split(',').collect(&:strip)
+
   def initialize
     @logger = Logger.new(STDOUT)
     @logger.formatter = proc do |severity, datetime, progname, msg|
@@ -141,6 +143,20 @@ class CFLightAPIWorker
     end
   end
 
+  def filtered_environment_variables env_vars
+
+    if ENVIRONMENT_VARIABLES_WHITELIST.any?
+      return ENVIRONMENT_VARIABLES_WHITELIST.inject({}) do |filtered, key|
+        filtered[key] = env_vars[key] if env_vars[key]
+        filtered
+      end
+
+    else
+      return env_vars
+    end
+
+  end
+
   def update_cf_data
     @cf_client = nil
     @graphite  = GraphiteAPI.new(graphite: "#{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}") if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT'] and ENV['CF_ENV_NAME']
@@ -154,12 +170,12 @@ class CFLightAPIWorker
 
           @cf_client = get_client() # Ensure we have a fresh auth token...
 
-          @apps      = cf_rest('/v2/apps?results-per-page=100')
-          @orgs      = cf_rest('/v2/organizations?results-per-page=100')
-          @quotas    = cf_rest('/v2/quota_definitions?results-per-page=100')
-          @spaces    = cf_rest('/v2/spaces?results-per-page=100')
-          @stacks    = cf_rest('/v2/stacks?results-per-page=100')
-          @domains   = cf_rest('/v2/domains?results-per-page=100')
+          @apps    = cf_rest('/v2/apps?results-per-page=100')
+          @orgs    = cf_rest('/v2/organizations?results-per-page=100')
+          @quotas  = cf_rest('/v2/quota_definitions?results-per-page=100')
+          @spaces  = cf_rest('/v2/spaces?results-per-page=100')
+          @stacks  = cf_rest('/v2/stacks?results-per-page=100')
+          @domains = cf_rest('/v2/domains?results-per-page=100')
 
           formatted_orgs = @orgs.map do |org|
             quota = @quotas.find{|a_quota| a_quota['metadata']['guid'] == org['entity']['quota_definition_guid']}
@@ -203,6 +219,10 @@ class CFLightAPIWorker
               :stack         => stack['entity']['name'],
               :state         => app['entity']['state']
             }
+
+            if ENV['EXPOSE_ENVIRONMENT_VARIABLES'] == 'true' then
+              base_data[:environment_variables] = filtered_environment_variables( app['entity']['environment_json'] )
+            end
 
             # Add additional data, such as instance usage statistics - but this is only possible if the instances are running.
             additional_data = {}

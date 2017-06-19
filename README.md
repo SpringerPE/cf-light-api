@@ -82,6 +82,7 @@ An array of JSON documents for all applications in the configured CF environment
 * If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
 * The `diego` attribute is a boolean which will be `true` if the application is running on a Diego Cell, or `false` if running on a DEA Node. See the Cloud Foundry [docs](https://docs.cloudfoundry.org/concepts/diego/dea-vs-diego.html) for more information on these two architectures.
 * The `docker` attribute is a boolean which will be `true` if the application was deployed from a Docker image, or `false` if it was deployed using a buildpack. If `true`, the `docker_image` attribute will then show the Docker image used, otherwise it will be `null`.
+* There is an optional `environment_variables` attribute which only appears if the feature is enabled - please see the section of Gathering Environment Variables below for more information.
 
 ### Organisations
 
@@ -215,6 +216,22 @@ Instrumentation regarding the API and the backend worker can be made available i
 export NEW_RELIC_LICENSE_KEY=<license key goes here>
 export NEW_RELIC_APP_NAME="CF Light API"
 ```
+
+### Gathering Environment Variables
+
+You can gather all user-provided environment variables for each application by enabling the feature with an environment variable:
+
+```
+export EXPOSE_ENVIRONMENT_VARIABLES=true
+```
+
+If you want to filter out sensitive environment variables, you can also set an optional whitelist, to capture only the environment variables you specify via a comma-seperated list of one or more strings:
+
+```
+export ENVIRONMENT_VARIABLES_WHITELIST="MY_ENV_VAR, A_SECOND_ENV_VAR"
+```
+
+The matching data will be exposed in an `environment_variables` attribute in the response to `/v1/apps`. If this feature is not explicitly enabled, the attribute will not be present at all. If you enable the feature with a whitelist and there are no matches, this attribute will contain an empty document `{}`.
 
 ## Development
 
