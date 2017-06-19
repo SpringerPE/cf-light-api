@@ -1,3 +1,11 @@
+## 2.5.0 (June 19, 2017)
+
+Features:
+
+  - Adds an additional opt-in attribute to the response for `/v1/apps`:
+    * `environment_variables`
+      A dictionary containing an app's environment variables. This feature must be enabled explicitly and can also be configured with a whitelist to protect sensitive environment variables from being exposed.
+
 ## 2.4.0 (January 16, 2017)
 
 Features:
