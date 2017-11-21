@@ -42,6 +42,12 @@ module Sinatra
         status 503 if seconds_since_update >= (ENV['DATA_AGE_VALIDITY'] || '600'.to_i)
         return updated_json
       end
+
+      app.get '/v1/info' do
+        content_type :json
+        return REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:info")
+      end
+
     end
 
   end
