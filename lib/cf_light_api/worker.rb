@@ -200,7 +200,6 @@ class CFLightAPIWorker
             space  = @spaces.find{|a_space| a_space['metadata']['guid'] == app['entity']['space_guid']}
             org    = @orgs.find{|an_org|     an_org['metadata']['guid'] == space['entity']['organization_guid']}
             stack  = @stacks.find{|a_stack| a_stack['metadata']['guid'] == app['entity']['stack_guid']}
-            routes = format_routes_for_app(app)
 
             running = (app['entity']['state'] == "STARTED")
 
@@ -214,7 +213,6 @@ class CFLightAPIWorker
               :last_uploaded => app['metadata']['updated_at'] ? DateTime.parse(app['metadata']['updated_at']).strftime('%Y-%m-%d %T %z') : nil,
               :name          => app['entity']['name'],
               :org           => org['entity']['name'],
-              :routes        => routes,
               :space         => space['entity']['name'],
               :stack         => stack['entity']['name'],
               :state         => app['entity']['state']
@@ -239,9 +237,12 @@ class CFLightAPIWorker
                 end
               end
 
+              routes = format_routes_for_app(app)
+
               additional_data = {
                :running   => running,
                :instances => instance_stats,
+               :routes    => routes,
                :error     => nil
               }
 
@@ -253,6 +254,7 @@ class CFLightAPIWorker
               additional_data = {
                 :running   => 'error',
                 :instances => [],
+                :routes    => [],
                 :error     => e.message
               }
             end
