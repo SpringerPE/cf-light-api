@@ -129,6 +129,35 @@ A single JSON document showing the last time the data was updated by the worker:
 
 If the data was not updated within a configurable time period, the HTTP status will be `503 Service Unavailable`.
 
+### Info
+
+`GET /v1/info`
+
+#### Response
+
+A single JSON document showing various pieces of information about the CF installation. This data comes unmodified from CF's own `/v2/info` endpoint.
+
+```json
+{
+  "name": "vcap",
+  "build": "2222",
+  "support": "http://support.cloudfoundry.com",
+  "version": 2,
+  "description": "Cloud Foundry sponsored by Pivotal",
+  "authorization_endpoint": "http://localhost:8080/uaa",
+  "token_endpoint": "http://localhost:8080/uaa",
+  "min_cli_version": "6.20.0",
+  "min_recommended_cli_version": "6.21.0",
+  "api_version": "2.94.0",
+  "app_ssh_endpoint": "ssh.system.domain.example.com:2222",
+  "app_ssh_host_key_fingerprint": "47:0d:d1:c8:c3:3d:0a:36:d1:49:2f:f2:90:27:31:d0",
+  "app_ssh_oauth_client": null,
+  "routing_endpoint": "http://localhost:3000",
+  "doppler_logging_endpoint": "wss://doppler.vcap.me:4443",
+  "logging_endpoint": "ws://loggregator.vcap.me:80"
+}
+```
+
 ## Worker
 
 The worker basically gets all the data we want from the real API every 5 mins, puts in Redis and sleeps. The worker runs in a background thread via the Rufus Scheduler and is automatically started as part of the API. There is basic locking implemented via Redis to allow you to run multiple instances of `cf_light_api` alongside one another, without duplicating work.

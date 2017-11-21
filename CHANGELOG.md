@@ -1,3 +1,13 @@
+## 2.5.1 (November 21, 2017)
+
+Features:
+
+  - Adds an additional endpoint `/v1/info` which returns the unmodified response from CF's own `/v2/info` endpoint, containing various useful bits of information about your CF installation.
+
+Bugfixes:
+
+  - Sometimes route gathering would fail for apps in certain edge case states, this should now be handled gracefully instead of causing the data update to fail.
+
 ## 2.5.0 (June 19, 2017)
 
 Features:
