@@ -176,6 +176,7 @@ class CFLightAPIWorker
           @spaces  = cf_rest('/v2/spaces?results-per-page=100')
           @stacks  = cf_rest('/v2/stacks?results-per-page=100')
           @domains = cf_rest('/v2/domains?results-per-page=100')
+          cf_info  = cf_rest('/v2/info').first
 
           formatted_orgs = @orgs.map do |org|
             quota = @quotas.find{|a_quota| a_quota['metadata']['guid'] == org['entity']['quota_definition_guid']}
@@ -262,6 +263,7 @@ class CFLightAPIWorker
             base_data.merge additional_data
           end
 
+          put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:info", cf_info
           put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:orgs", formatted_orgs
           put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", formatted_apps
           put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:last_updated", {:last_updated => Time.now}
