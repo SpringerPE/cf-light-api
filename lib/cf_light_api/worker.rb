@@ -45,8 +45,8 @@ class CFLightAPIWorker
     @lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
     @scheduler    = Rufus::Scheduler.new
 
-    @logger.info "Update interval: '#{@update_interval}'"
-    @logger.info "Update timeout:  '#{@update_timeout}'"
+    @logger.info "Update interval: '#{update_interval}'"
+    @logger.info "Update timeout:  '#{update_timeout}'"
 
     if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT']
       @logger.info "Graphite server: #{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}"
