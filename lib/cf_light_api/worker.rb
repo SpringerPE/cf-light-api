@@ -119,6 +119,12 @@ class CFLightAPIWorker
     end
   end
 
+  def send_cf_light_api_update_time_to_graphite seconds
+    graphite_key = "cf_light_api.#{ENV['CF_ENV_NAME']}.update_duration"
+    @logger.info "Exporting CF Light API update time to Graphite, path '#{graphite_key}'=>'#{seconds.round}'"
+    @graphite.metrics "#{graphite_base}" => seconds.round
+  end
+
   def put_in_redis(key, data)
     REDIS.set key, data.to_json
   end
@@ -270,7 +276,10 @@ class CFLightAPIWorker
           put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:apps", formatted_apps
           put_in_redis "#{ENV['REDIS_KEY_PREFIX']}:last_updated", {:last_updated => Time.now}
 
-          @logger.info "Update completed in #{format_duration(Time.now.to_f - start_time.to_f)}..."
+          elapsed_seconds = Time.now.to_f - start_time.to_f
+          @logger.info "Update completed in #{format_duration(elapsed_seconds)}..."
+          send_cf_light_api_update_time_to_graphite(elapsed_seconds) if @graphite
+
           @lock_manager.unlock(lock)
           @cf_client.logout
         else
@@ -279,6 +288,7 @@ class CFLightAPIWorker
       end
     rescue Rufus::Scheduler::TimeoutError
       @logger.info 'Data update took too long and was aborted, waiting for the lock to expire before trying again...'
+      send_cf_light_api_update_time_to_graphite(0) if @graphite
       @cf_client.logout
     end
   end
