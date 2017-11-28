@@ -247,9 +247,9 @@ class CFLightAPIWorker
                :error     => nil
               }
 
-            rescue Rufus::Scheduler::TimeoutError => error
-              raise error
-            rescue StandardError => error
+            rescue Rufus::Scheduler::TimeoutError => e
+              raise e
+            rescue StandardError => e
               # Most exceptions here will be caused by the app or one of the instances being in a non-standard state,
               # for example, trying to query an app which was present when the worker began updating, but was stopped
               # before we reached this section, so we just catch all exceptions, log the reason and move on.
