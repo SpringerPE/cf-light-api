@@ -5,6 +5,7 @@ require 'redlock'
 require 'logger'
 require 'graphite-api'
 require 'date'
+require 'parallel'
 
 class CFLightAPIWorker
   if ENV['NEW_RELIC_LICENSE_KEY']
@@ -42,11 +43,14 @@ class CFLightAPIWorker
     update_interval = (ENV['UPDATE_INTERVAL'] || '5m').to_s # If you change the default '5m' here, also remember to change the default age validity in sinatra/cf_light_api.rb:31
     update_timeout  = (ENV['UPDATE_TIMEOUT']  || '5m').to_s
 
+    @update_threads  = (ENV['UPDATE_THREADS'] || 1).to_i
+
     @lock_manager = Redlock::Client.new([ENV['REDIS_URI']])
     @scheduler    = Rufus::Scheduler.new
 
     @logger.info "Update interval: '#{update_interval}'"
     @logger.info "Update timeout:  '#{update_timeout}'"
+    @logger.info "Update threads:  '#{@update_threads}'"
 
     if ENV['GRAPHITE_HOST'] and ENV['GRAPHITE_PORT']
       @logger.info "Graphite server: #{ENV['GRAPHITE_HOST']}:#{ENV['GRAPHITE_PORT']}"
@@ -202,7 +206,7 @@ class CFLightAPIWorker
             }
           end
 
-          formatted_apps = @apps.map do |app|
+          formatted_apps = Parallel.map(@apps, :in_threads => @update_threads) do |app|
             # TODO: This is a bit repetative, could maybe improve?
             space  = @spaces.find{|a_space| a_space['metadata']['guid'] == app['entity']['space_guid']}
             org    = @orgs.find{|an_org|     an_org['metadata']['guid'] == space['entity']['organization_guid']}

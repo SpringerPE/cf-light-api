@@ -18,4 +18,5 @@ Gem::Specification.new 'cf_light_api', '2.5.1' do |s|
   s.add_dependency 'redlock',         '~> 0.1.1'
   s.add_dependency 'graphite-api',    '~> 0.1.6'
   s.add_dependency 'newrelic_rpm',    '~> 3.17.1'
+  s.add_dependency 'parallel',        '~> 1.12.0'
 end
