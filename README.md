@@ -216,6 +216,14 @@ Any option which is valid for [Rufus Scheduler](https://github.com/jmettraux/ruf
 
 If you change these settings, you will also need to adjust the data age validity, as described below.
 
+### Update Parallelisation
+
+For larger Cloud Foundry deployments, you may wish to increase the number of threads (from the default of `1`) used to gather application data by setting the following environment variable:
+
+`export UPDATE_THREADS=4`
+
+Note that this will of course increase the number of simultaneous requests made to your main Cloud Foundry API.
+
 ### Data Age Validity
 
 By default, the data is considered valid if it was last updated within 10 minutes (twice the default update interval). You can modify this behaviour by setting the following environment variable (in seconds):

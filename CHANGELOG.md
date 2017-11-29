@@ -1,3 +1,14 @@
+## 2.6.0.pre1 (November 29, 2017)
+
+Features:
+
+  - Reintroduced the parallelisation option when gathering app data, to speed things up for larger Cloud Foundry deployments. Defaults to the current behaviour of a single thread.
+  - The duration of the worker update is now sent to Graphite under a new key `cf_light_api.${cf_environment}.update_duration`. It is given in seconds, or `0` if the timeout was reached during the update.
+
+Bugfixes:
+
+  - Fixed a bug where TimeoutErrors were being caught at the wrong level, and causing an `error` state to be set for apps which were actually running, resulting in the API returning incorrect data.
+
 ## 2.5.1 (November 21, 2017)
 
 Features:
