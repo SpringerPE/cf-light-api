@@ -126,7 +126,7 @@ class CFLightAPIWorker
   def send_cf_light_api_update_time_to_graphite seconds
     graphite_key = "cf_light_api.#{ENV['CF_ENV_NAME']}.update_duration"
     @logger.info "Exporting CF Light API update time to Graphite, path '#{graphite_key}'=>'#{seconds.round}'"
-    @graphite.metrics "#{graphite_base}" => seconds.round
+    @graphite.metrics "#{graphite_key}" => seconds.round
   end
 
   def put_in_redis(key, data)
