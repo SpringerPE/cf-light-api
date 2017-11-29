@@ -1,3 +1,9 @@
+## 2.6.0.pre2 (November 29, 2017)
+
+Bugfixes:
+
+  - Fixed a bug when sending worker update duration to Graphite.
+
 ## 2.6.0.pre1 (November 29, 2017)
 
 Features:
