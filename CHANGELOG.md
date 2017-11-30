@@ -1,3 +1,11 @@
+## 2.6.0.pre3
+
+Bugfixes:
+
+  - Ensure the response from CF is a valid JSON object, and correctly handle this as an error if it is not.
+  - Added error handling to the domain lookup logic for app routes.
+  - Stacktraces are now logged along with the error message, when rescuing from StandardError.
+
 ## 2.6.0.pre2 (November 29, 2017)
 
 Bugfixes:
