@@ -74,7 +74,18 @@ class CFLightAPIWorker
     @logger.info "Making #{method} request for #{path}..."
 
     resources = []
-    response = JSON.parse(@cf_client.base.rest_client.request(method, path)[1][:body])
+    options = {:accept => :json}
+    response = @cf_client.base.rest_client.request(method, path, options)[1][:body]
+
+    begin
+      response = JSON.parse(response)
+    rescue Rufus::Scheduler::TimeoutError => e
+      raise e
+    rescue StandardError => e
+      @logger.info "Error parsing JSON response from #{method} request for #{path}: #{e.message}"
+      @logger.error e.backtrace
+      raise "Invalid JSON response from CF for #{method} #{path}"
+    end
 
     # Some endpoints return a 'resources' array, others are flat, depending on the path.
     if response['resources']
