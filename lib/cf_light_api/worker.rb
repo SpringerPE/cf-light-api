@@ -282,6 +282,7 @@ class CFLightAPIWorker
               # for example, trying to query an app which was present when the worker began updating, but was stopped
               # before we reached this section, so we just catch all exceptions, log the reason and move on.
               @logger.info "  #{org['entity']['name']} #{space['entity']['name']}: '#{app['entity']['name']}' error: #{e.message}"
+              @logger.error e.backtrace
               additional_data = {
                 :running   => 'error',
                 :instances => [],
