@@ -157,8 +157,15 @@ class CFLightAPIWorker
       host   = route['entity']['host']
       path   = route['entity']['path']
 
-      domain = @domains.find{|a_domain| a_domain['metadata']['guid'] == route['entity']['domain_guid']}
-      domain = domain['entity']['name']
+      domain = ''
+      begin
+        domain = @domains.find{|a_domain| a_domain['metadata']['guid'] == route['entity']['domain_guid']}
+        domain = domain['entity']['name']
+      rescue Rufus::Scheduler::TimeoutError => e
+        raise e
+      rescue StandardError => e
+        raise "Unable to determine domain for route #{route['metadata']['url']}"
+      end
 
       "#{host}.#{domain}#{path}"
     end
