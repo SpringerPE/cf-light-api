@@ -1,3 +1,9 @@
+## 2.6.0.pre4
+
+Features:
+
+  - Upgraded some of our dependencies to the latest versions.
+
 ## 2.6.0.pre3
 
 Bugfixes:
