@@ -1,3 +1,7 @@
+# 2.6.0 (December 4th, 2017)
+
+Contains several features and bugfixes, tested via the following pre-release versions:
+
 ## 2.6.0.pre4
 
 Features:
