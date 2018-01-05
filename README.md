@@ -19,15 +19,13 @@ The API just reads a stringified JSON from Redis and serves it under the followi
 
 `GET /v1/apps`
 
-#### Parameters
+#### (Optional) Filtering by Org name
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `org` | `string` | (Optional) Filter the applications by organisation name |
+`GET /v1/apps/<org_name>`
 
 #### Response
 
-An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to show only applications belonging to the given `org`. Each document has the following structure:
+An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to contain only applications belonging to the given `org`. Each document has the following structure:
 
 ```json
 {
@@ -88,15 +86,13 @@ An array of JSON documents for all applications in the configured CF environment
 
 `GET /v1/orgs`
 
-#### Parameters
+#### (Optional) Filtering by Org GUID
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `guid` | `string` | (Optional) Filter the organisations by GUID |
+`GET /v1/orgs/<guid>`
 
 #### Response
 
-An array of JSON documents, for all organisations in your CF environment. If you provide an `guid` parameter, the list will be filtered to show the organisation with the given `guid`. Each document has the following structure:
+An array of JSON documents, for all organisations in your CF environment. If you provide an `guid` parameter, the list will be filtered to contain only the organisation with the given `guid`. Each document has the following structure:
 
 ```json
 {
