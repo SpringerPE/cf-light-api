@@ -19,4 +19,10 @@ Gem::Specification.new 'cf_light_api', '2.6.0' do |s|
   s.add_dependency 'graphite-api',    '~> 0.1.6'
   s.add_dependency 'newrelic_rpm',    '~> 3.17.1'
   s.add_dependency 'parallel',        '~> 1.12.0'
+  s.add_dependency 'virtus'
+
+  s.add_development_dependency "rake", "~> 10.0"
+  s.add_development_dependency "rspec", "~> 3.0"
+  s.add_development_dependency "webmock"
+
 end
