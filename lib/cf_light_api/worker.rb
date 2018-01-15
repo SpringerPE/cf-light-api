@@ -81,15 +81,11 @@ class CFLightAPIWorker
       response = JSON.parse(response)
     rescue Rufus::Scheduler::TimeoutError => e
       raise e
-    rescue CFoundry => e
-      @logger.error "We got us one of those pesky CFoundry exceptions"
-      @logger.error e.backtrace
-      @logger.error response
-      raise e
-    rescue StandardError => e
+    rescue CFoundry, StandardError => e
       @logger.info "Error parsing JSON response from #{method} request for #{path}: #{e.message}"
       @logger.error e.backtrace
-      raise "Invalid JSON response from CF for #{method} #{path}"
+      @logger.error response
+      raise "Error handling CF request #{method} #{path}"
     end
 
     # Some endpoints return a 'resources' array, others are flat, depending on the path.
