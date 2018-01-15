@@ -81,6 +81,11 @@ class CFLightAPIWorker
       response = JSON.parse(response)
     rescue Rufus::Scheduler::TimeoutError => e
       raise e
+    rescue CFoundry => e
+      @logger.error "We got us one of those pesky CFoundry exceptions"
+      @logger.error e.backtrace
+      @logger.error response
+      raise e
     rescue StandardError => e
       @logger.info "Error parsing JSON response from #{method} request for #{path}: #{e.message}"
       @logger.error e.backtrace
