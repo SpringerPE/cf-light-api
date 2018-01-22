@@ -1,0 +1,2 @@
+class CFResponseError < StandardError
+end
