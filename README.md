@@ -158,7 +158,7 @@ If there are no errors, the `meta` attribute will instead look like this:
 }
 ```
 
-##### Notes
+##### Notes
 
 * The `running` attribute is a boolean and will be `true` if there is at least one instance of your app with the state of `RUNNING`.
 
@@ -229,7 +229,7 @@ An array of JSON documents for all applications in the configured CF environment
 }
 ```
 
-##### Notes
+##### Notes
 
 * The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
 
