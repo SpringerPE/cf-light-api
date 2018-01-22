@@ -160,7 +160,7 @@ If there are no errors, the `meta` attribute will instead look like this:
 
 ##### Notes
 
-* The `running` attribute is a boolean and will be `true` if there is at least one instance of your app with the state of `RUNNING`.
+* The `running` attribute is a boolean and will be `true` if there is at least one instance of your app with the state of `RUNNING`, or `false` otherwise.
 
 * Memory, disk quota and usage figures are given in bytes.
 
