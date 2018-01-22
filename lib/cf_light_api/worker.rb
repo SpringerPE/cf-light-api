@@ -41,7 +41,7 @@ class CFLightAPIWorker
     if ENV['GRAPHITE_HOST'] or ENV['GRAPHITE_PORT']
       ['GRAPHITE_HOST', 'GRAPHITE_PORT', 'CF_ENV_NAME'].each do |env|
         unless ENV[env]
-          @logger.info "Error: please set the '#{env}' environment variable to enable exporting to Graphite."
+          @logger.info "Error: please also set the '#{env}' environment variable to enable exporting to Graphite."
           exit 1
         end
       end
