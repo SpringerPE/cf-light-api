@@ -364,6 +364,12 @@ applications:
 
 ## Customisation
 
+### Debug Logs
+
+You can enable more verbose debug logs by setting the following environment variable:
+
+`export DEBUG=true`
+
 ### Update Frequency and Timeout
 
 The default is to update data every 5 minutes, with a 5 minute timeout. You can modify this behaviour by setting the following environment variables:
