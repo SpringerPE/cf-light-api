@@ -18,6 +18,13 @@ class CFLightAPIWorker
 
   def initialize
     @logger = Logger.new(STDOUT)
+
+    if ENV['DEBUG']
+      @logger.level = Logger::DEBUG
+    else
+      @logger.level = Logger::INFO
+    end
+
     @logger.formatter = proc do |severity, datetime, progname, msg|
        "#{datetime} [cf_light_api:worker]: #{msg}\n"
     end
