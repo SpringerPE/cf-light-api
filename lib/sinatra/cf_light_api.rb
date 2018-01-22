@@ -21,6 +21,17 @@ module Sinatra
         return all_apps.to_json
       end
 
+      app.get '/v2/apps/?:org?' do
+        content_type :json
+        all_apps = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:apps:v2"))
+
+        if params[:org]
+          return all_apps.select{|an_app| an_app['org'] == params[:org]}.to_json
+        end
+
+        return all_apps.to_json
+      end
+
       app.get '/v1/orgs/?:guid?' do
         content_type :json
         all_orgs = JSON.parse(REDIS.get("#{ENV['REDIS_KEY_PREFIX']}:orgs"))
