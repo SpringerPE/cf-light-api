@@ -321,7 +321,6 @@ class CFLightAPIWorker
               v2_document['created_at']            = app['metadata']['created_at']
               v2_document['updated_at']            = app['metadata']['updated_at']
               v2_document['guid']                  = app['metadata']['guid']
-              v2_document['running']               = nil
               v2_document['instances']             = []
               v2_document['routes']                = []
               v2_document['meta']                  = { 'error' => false }
@@ -353,13 +352,18 @@ class CFLightAPIWorker
               v1_document['instances'] = instances
               v2_document['instances'] = instances
 
+              running = false
+              if instances.any?
+                if instances.select{|instance| instance['state'] == 'RUNNING'}.any?
+                  running = true
+                end
+              end
+              v1_document['running'] = running
+              v2_document['running'] = running
+
               if @graphite
                 send_instance_usage_data_to_graphite(instances, org['entity']['name'], app['entity']['space']['entity']['name'], app['entity']['name'])
               end
-
-              running = instances.any?
-              v1_document['running'] = running
-              v2_document['running'] = running
 
             rescue Rufus::Scheduler::TimeoutError => e
               raise e
