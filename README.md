@@ -6,8 +6,8 @@
 
 A super lightweight API for CloudFoundry. Why? Well the CF API contains all sorts of relations making it very heavy to query.
 
-Having lots of api consumers for random scripts and dashboards makes it necessary to scale up the CF installation not to disrupt normal "cf cli operations".
-So, lets just cache all the data we want in Redis for 5 minutes and serve that. Wiie. \o/
+Having lots of API consumers for random scripts and dashboards makes it necessary to scale up the CF installation not to disrupt normal "cf cli operations".
+So, lets just cache all the data we want in Redis for 5 minutes and serve that. \o/
 
 This gem provides a single binary `cf_light_api`, which starts a small Sinatra app to serve the HTTP requests, and also starts a background worker via the Rufus Scheduler, which updates Redis with the data from CF every 5 minutes.
 
@@ -17,13 +17,170 @@ The API just reads a stringified JSON from Redis and serves it under the followi
 
 ### Apps
 
+There are currently two endpoints, the original (and now deprecated) "v1" and a new "v2" which offers more details and better error handling.
+
+#### V2 - Current
+
+`GET /v2/apps`
+
+##### (Optional) Filtering by Org name
+
+`GET /v2/apps/<org_name>`
+
+##### Response
+
+An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to contain only applications belonging to the given `org`. The majority of the document is identical to the response you would receive from a standard `/v2/apps` request made against the main CF API, but with some additional fields added on top:
+
+* `created_at` - When the app was originally created, taken from the metadata.
+
+* `updated_at` - When the app was last modified, taken from the metadata.
+
+* `guid` - The app GUID, taken from the metadata.
+
+* `instances` - An array of all instances associated with this application, their state and usage statistics
+
+* `routes` - An array of all routes assigned to your app instances (also exposed via the `uris` attribute of each member of the `instances` attribute).
+
+* `meta` - A document containing any error messages capturing during processing of this application.
+
+* `stack` - The name of the container stack being used by the application, as a string.
+
+* `space` - The name of the space this app belongs to, as a string.
+
+* `org` - The name of the org this app belongs to, as a string.
+
+* `environment_json` - An array of environment variables exposed to this application, if enabled as documented [here](#gathering-environment-variables).
+
+Each document has the following structure:
+
+```json
+{
+  "name": "app_name",
+  "production": false,
+  "space_guid": "c0af44b8-8b51-4db5-927e-ccad2e6dab54",
+  "stack_guid": "7c5b664c-e9b8-457b-83a4-6092b7372494",
+  "buildpack": null,
+  "detected_buildpack": "Ruby",
+  "detected_buildpack_guid": "44ec3a97-0d94-4ebb-ad33-e9ee837515bd",
+  "environment_json": {},
+  "memory": 64,
+  "instances": [
+    {
+      "state": "RUNNING",
+      "stats": {
+        "name": "app_name",
+        "uris": [
+          "app_name.yourdomain.com"
+        ],
+        "host": "ip address",
+        "port": "port number",
+        "uptime": 2889203,
+        "mem_quota": 67108864,
+        "disk_quota": 1073741824,
+        "fds_quota": 16384,
+        "usage": {
+          "time": "2018-01-19T15:54:48.254719257Z",
+          "cpu": 0.00012013292649106141,
+          "mem": 43802624,
+          "disk": 78118912
+        }
+      }
+    }
+  ],
+  "disk_quota": 1024,
+  "state": "STARTED",
+  "version": "45c81548-3d3d-4152-bbc5-6b86eba4d5df",
+  "command": null,
+  "console": false,
+  "debug": null,
+  "staging_task_id": "ba623c5c-18e1-4d6e-b331-aedf244cb493",
+  "package_state": "STAGED",
+  "health_check_type": "port",
+  "health_check_timeout": null,
+  "health_check_http_endpoint": null,
+  "staging_failed_reason": null,
+  "staging_failed_description": null,
+  "diego": true,
+  "docker_image": null,
+  "docker_credentials": {
+    "username": null,
+    "password": null
+  },
+  "package_updated_at": "2017-06-13T12:19:37Z",
+  "detected_start_command": "bundle exec rackup config.ru -p $PORT",
+  "enable_ssh": false,
+  "ports": [
+    8080
+  ],
+  "space_url": "/v2/spaces/c0af44b8-8b51-4db5-927e-ccad2e6dab54",
+  "stack_url": "/v2/stacks/7c5b664c-e9b8-457b-83a4-6092b7372494",
+  "stack": "cflinuxfs2",
+  "routes_url": "/v2/apps/ba623c5c-18e1-4d6e-b331-aedf244cb493/routes",
+  "routes": [
+    "app_name.yourdomain.com"
+  ],
+  "events_url": "/v2/apps/ba623c5c-18e1-4d6e-b331-aedf244cb493/events",
+  "service_bindings_url": "/v2/apps/ba623c5c-18e1-4d6e-b331-aedf244cb493/service_bindings",
+  "route_mappings_url": "/v2/apps/ba623c5c-18e1-4d6e-b331-aedf244cb493/route_mappings",
+  "created_at": "2015-04-22T12:07:56Z",
+  "updated_at": "2016-12-20T10:02:47Z",
+  "guid": "ba623c5c-18e1-4d6e-b331-aedf244cb493",
+  "running": true,
+  "environment_variables": {},
+  "meta": {
+    "error": false
+  },
+  "space": "space name",
+  "org": "org name"
+}
+```
+
+##### Errors
+
+If there are any errors processing a given application, details on the error will be captured and exposed in the `meta` attribute, for example:
+
+```
+"meta": {
+  "error": true,
+  "type": "CFResponseError",
+  "message": "Code 200003: CF-AppStoppedStatsError - Could not fetch stats for stopped app: <name of app here>",
+  "backtrace": [
+    "etc...", "etc...", "etc..."
+  ]
+}
+```
+
+If there are no errors, the `meta` attribute will instead look like this:
+
+```
+"meta": {
+  "error": false
+}
+```
+
+##### Notes
+
+* The `running` attribute is a boolean and will be `true` if there is at least one instance of your app with the state of `RUNNING`.
+
+* Memory, disk quota and usage figures are given in bytes.
+
+* If the buildpack is not known, the `buildpack` attribute will be `null`.
+
+* If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
+
+* The `diego` attribute is a boolean which will be `true` if the application is running on a Diego Cell, or `false` if running on a DEA Node. See the Cloud Foundry [docs](https://docs.cloudfoundry.org/concepts/diego/dea-vs-diego.html) for more information on these two architectures.
+
+* There is an optional `environment_json` attribute which only appears if the feature is enabled - please see the [Gathering Environment Variables](#gathering-environment-variables) section below for more information.
+
+#### V1 - Deprecated
+
 `GET /v1/apps`
 
-#### (Optional) Filtering by Org name
+##### (Optional) Filtering by Org name
 
 `GET /v1/apps/<org_name>`
 
-#### Response
+##### Response
 
 An array of JSON documents for all applications in the configured CF environment. If you provide an `org` parameter, the list will be filtered to contain only applications belonging to the given `org`. Each document has the following structure:
 
@@ -75,11 +232,17 @@ An array of JSON documents for all applications in the configured CF environment
 ##### Notes
 
 * The `running` attribute may contain `true`, `false` or `error`. Applications in the latter state will have further information about the problem in the `error` attribute, which is `null` at all other times.
+
 * Memory, disk quota and usage figures are given in bytes.
+
 * If the buildpack is not known, the `buildpack` attribute will be `null`.
+
 * If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
+
 * The `diego` attribute is a boolean which will be `true` if the application is running on a Diego Cell, or `false` if running on a DEA Node. See the Cloud Foundry [docs](https://docs.cloudfoundry.org/concepts/diego/dea-vs-diego.html) for more information on these two architectures.
+
 * The `docker` attribute is a boolean which will be `true` if the application was deployed from a Docker image, or `false` if it was deployed using a buildpack. If `true`, the `docker_image` attribute will then show the Docker image used, otherwise it will be `null`.
+
 * There is an optional `environment_variables` attribute which only appears if the feature is enabled - please see the section of Gathering Environment Variables below for more information.
 
 ### Organisations
@@ -180,7 +343,7 @@ Then run `bundle install`.
 
 3. You should now be able to start the CF Light API and worker by running `cf_light_api`.
 
-## Deploying to CloudFoundry
+## Deploying to Cloud Foundry
 
 1. Create a `manifest.yml` in the Ruby project you just created, containing the following:
 ```yml
