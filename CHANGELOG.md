@@ -1,4 +1,22 @@
-# 2.6.0 (December 4th, 2017)
+## 3.0.0.pre1 (January 22, 2017)
+
+We've refactored the worker to improve error handling, and to make it possible to capture errors from CF during processing of each app, so we can propagate this out to the consumers.
+
+Furthermore, we now also capture the entire response from Cloud Foundry, for each app, rather than mapping only a subset of the attributes, this should allow consumers to make more informed decisions with the data.
+
+Features:
+
+  - New `/v2/apps` endpoint which returns all the app data available from CF, rather than a subset of the fields as before.
+
+  - New `meta` attribute present for each app in `/v2/apps`, which contains details of any errors encountered when processing the relevant app.
+
+  - Adjusted default log levels to be less noisy, and added an option to enable debug logging via a `DEBUG` environment variable when needed.
+
+Deprecated:
+
+  - The `/v1/apps` endpoint remains, but should now be considered deprecated.
+
+## 2.6.0 (December 4th, 2017)
 
 Contains several features and bugfixes, tested via the following pre-release versions:
 
