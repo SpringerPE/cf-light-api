@@ -364,6 +364,9 @@ class CFLightAPIWorker
             rescue Rufus::Scheduler::TimeoutError => e
               raise e
             rescue CFoundry, CFResponseError, StandardError => e
+              v1_document['running']           = "error"
+              v1_document['error']             = "#{e.message}"
+
               v2_document['meta']              = {}
               v2_document['meta']['error']     = true
               v2_document['meta']['type']      = e.class
