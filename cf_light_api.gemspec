@@ -8,6 +8,7 @@ Gem::Specification.new 'cf_light_api', '2.6.0' do |s|
   s.license     = 'MIT'
   s.files       = [ './lib/sinatra/cf_light_api.rb',
                     './lib/cf_light_api/redis.rb',
+                    './lib/cf_light_api/cf_response_error.rb',
                     './lib/cf_light_api/worker.rb' ]
   s.executables = 'cf_light_api'
 
