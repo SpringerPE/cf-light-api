@@ -1,3 +1,9 @@
+## 3.0.0.pre3 (January 23, 2017)
+
+Bugfixes:
+
+  - We no longer try to gather app instance stats, if the app state is 'STOPPED'.
+
 ## 3.0.0.pre2 (January 23, 2017)
 
 Bugfixes:
