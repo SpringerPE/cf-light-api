@@ -347,10 +347,13 @@ class CFLightAPIWorker
               v1_document['routes'] = routes
               v2_document['routes'] = routes
 
-              response = cf_rest("/v2/apps/#{app['metadata']['guid']}/stats")
-              instances = response.first.map{|key,value|value}
-              v1_document['instances'] = instances
-              v2_document['instances'] = instances
+              # Try to gather app instance stats, unless the app is stopped...
+              unless app['entity']['state'] == 'STOPPED'
+                response = cf_rest("/v2/apps/#{app['metadata']['guid']}/stats")
+                instances = response.first.map{|key,value|value}
+                v1_document['instances'] = instances
+                v2_document['instances'] = instances
+              end
 
               running = false
               if instances.any?
