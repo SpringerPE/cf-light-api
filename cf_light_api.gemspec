@@ -1,4 +1,4 @@
-Gem::Specification.new 'cf_light_api', '3.0.0.pre4' do |s|
+Gem::Specification.new 'cf_light_api', '3.0.0.pre5' do |s|
   s.summary     = 'A super lightweight API for reading App and Org data from CloudFoundry, cached in Redis.'
   s.description = 'A super lightweight API for reading App and Org data from CloudFoundry, cached in Redis.'
 

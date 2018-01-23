@@ -1,3 +1,9 @@
+## 3.0.0.pre5 (January 23, 2017)
+
+Bugfixes:
+
+  - Fixed a scoping issue when checking if there is at least one running instance.
+
 ## 3.0.0.pre4 (January 23, 2017)
 
 Bugfixes:
