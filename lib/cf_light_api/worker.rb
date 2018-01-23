@@ -362,7 +362,7 @@ class CFLightAPIWorker
               v2_document['running'] = running
 
               if @graphite
-                send_instance_usage_data_to_graphite(instances, org['entity']['name'], app['entity']['space']['entity']['name'], app['entity']['name'])
+                send_instance_usage_data_to_graphite(instances, v2_document['org'], v2_document['space'], v2_document['name'])
               end
 
             rescue Rufus::Scheduler::TimeoutError => e
