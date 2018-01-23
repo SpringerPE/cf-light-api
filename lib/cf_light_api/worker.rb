@@ -136,13 +136,13 @@ class CFLightAPIWorker
       # Quota data
       ['mem_quota', 'disk_quota'].each do |key|
         @logger.trace "#{graphite_base_key}.#{key} => #{instance_data['stats'][key]}"
-        # @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats'][key]
+        @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats'][key]
       end
 
       # Usage data
       ['mem', 'disk', 'cpu'].each do |key|
         @logger.trace "#{graphite_base_key}.#{key} => #{instance_data['stats']['usage'][key]}"
-        # @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats']['usage'][key]
+        @graphite.metrics "#{graphite_base_key}.#{key}" => instance_data['stats']['usage'][key]
       end
     end
   end
@@ -153,14 +153,14 @@ class CFLightAPIWorker
 
     quota.keys.each do |key|
       @logger.trace "#{graphite_base_key}.quota.#{key} => #{quota[key]}"
-      # @graphite.metrics "#{graphite_base_key}.quota.#{key}" => quota[key]
+      @graphite.metrics "#{graphite_base_key}.quota.#{key}" => quota[key]
     end
   end
 
   def send_cf_light_api_update_time_to_graphite seconds
     graphite_key = "cf_light_api.#{ENV['CF_ENV_NAME']}.update_duration"
     @logger.info "Exporting CF Light API update time to Graphite, path #{graphite_key} => #{seconds.round}"
-    # @graphite.metrics "#{graphite_key}" => seconds.round
+    @graphite.metrics "#{graphite_key}" => seconds.round
   end
 
   def put_in_redis(key, data)
