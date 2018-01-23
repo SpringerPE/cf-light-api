@@ -356,8 +356,8 @@ class CFLightAPIWorker
               end
 
               running = false
-              if instances.any?
-                if instances.select{|instance| instance['state'] == 'RUNNING'}.any?
+              if v2_document['instances'].any?
+                if v2_document['instances'].select{|instance| instance['state'] == 'RUNNING'}.any?
                   running = true
                 end
               end
