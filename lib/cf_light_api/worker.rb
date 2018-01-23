@@ -220,9 +220,9 @@ class CFLightAPIWorker
         update_domains()
         domain = find_domain_for_route(route)
         if domain == nil
-          # If we can't determine the domain associated with this route, return nil for the entire route.
-          # TODO: How do we handle capturing this error?
-          return nil
+          # If we can't determine the domain associated with this route, raise an error as we can't guarantee the state is correct here,
+          # it shouldn't be possible to get a route back from CF with a domain GUID that doesn't exist, as that route would be invalid.
+          raise "Unable to find domain #{route['entity']['domain_guid']} for route #{route['metadata']['guid']}."
         end
       end
       "#{host}.#{domain['entity']['name']}#{path}"
