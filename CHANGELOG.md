@@ -1,3 +1,9 @@
+## 3.0.0.pre2 (January 23, 2017)
+
+Bugfixes:
+
+  - Fixes a regression to do with Graphite metrics when certain inline-relations are not present in the app object, for example "stack".
+
 ## 3.0.0.pre1 (January 22, 2017)
 
 We've refactored the worker to improve error handling, and to make it possible to capture errors from CF during processing of each app, so we can propagate this out to the consumers.
