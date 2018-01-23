@@ -1,3 +1,9 @@
+## 3.0.0.pre6 (January 24, 2017)
+
+Bugfixes:
+
+  - Don't attempt to send formatted instance stats to Graphite when there are no instances.
+
 ## 3.0.0.pre5 (January 23, 2017)
 
 Bugfixes:
