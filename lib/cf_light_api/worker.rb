@@ -355,18 +355,19 @@ class CFLightAPIWorker
                 v2_document['instances'] = instances
               end
 
+              # We consider an app to be "running" if there is at least one app instance available with a state of "RUNNING"
               running = false
+              running_instances = []
               if v2_document['instances'].any?
-                if v2_document['instances'].select{|instance| instance['state'] == 'RUNNING'}.any?
-                  running = true
-                end
+                running_instances = v2_document['instances'].select{|instance| instance['state'] == 'RUNNING'}
+                running = true if running_instances.any?
               end
               v1_document['running'] = running
               v2_document['running'] = running
 
               if @graphite
-                if v2_document['instances'].any?
-                  send_instance_usage_data_to_graphite(instances, v2_document['org'], v2_document['space'], v2_document['name'])
+                if running_instances.any?
+                  send_instance_usage_data_to_graphite(running_instances, v2_document['org'], v2_document['space'], v2_document['name'])
                 end
               end
 
