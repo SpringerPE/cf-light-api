@@ -1,4 +1,10 @@
-## 3.0.0.pre6 (January 24, 2017)
+## 3.0.0.pre7 (January 24, 2016)
+
+Bugfixes:
+
+  - In order to avoid an exception, we only pass through running instances when formatting usage stats to be sent to Graphite.
+
+## 3.0.0.pre6 (January 23, 2017)
 
 Bugfixes:
 
