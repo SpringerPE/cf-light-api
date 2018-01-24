@@ -14,7 +14,7 @@ Bugfixes:
 
 Bugfixes:
 
-  - Restoring Grsaphite functionality, which was disabled in the previous pre-release versions pre1, pre2 and pre3.
+  - Restoring Graphite functionality, which was disabled in the previous pre-release versions pre1, pre2 and pre3.
 
 ## 3.0.0.pre3 (January 23, 2017)
 
