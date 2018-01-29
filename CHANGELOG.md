@@ -1,3 +1,9 @@
+## 3.0.0.pre8 (January 29, 2018)
+
+Bugfixes:
+
+  - Ensure the `routes` and `instances` attributes are once again always present in the `/v1/apps` endpoint.
+
 ## 3.0.0.pre7 (January 24, 2018)
 
 Bugfixes:
