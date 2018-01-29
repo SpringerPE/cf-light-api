@@ -280,7 +280,9 @@ class CFLightAPIWorker
       :org           => org['entity']['name'],
       :space         => space['entity']['name'],
       :stack         => app['entity']['stack']['entity']['name'],
-      :state         => app['entity']['state']
+      :state         => app['entity']['state'],
+      :instances     => [],
+      :routes        => []
     }
   end
 
