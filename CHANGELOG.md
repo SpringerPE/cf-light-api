@@ -1,40 +1,40 @@
-## 3.0.0.pre7 (January 24, 2016)
+## 3.0.0.pre7 (January 24, 2018)
 
 Bugfixes:
 
   - In order to avoid an exception, we only pass through running instances when formatting usage stats to be sent to Graphite.
 
-## 3.0.0.pre6 (January 23, 2017)
+## 3.0.0.pre6 (January 23, 2018)
 
 Bugfixes:
 
   - Don't attempt to send formatted instance stats to Graphite when there are no instances.
 
-## 3.0.0.pre5 (January 23, 2017)
+## 3.0.0.pre5 (January 23, 2018)
 
 Bugfixes:
 
   - Fixed a scoping issue when checking if there is at least one running instance.
 
-## 3.0.0.pre4 (January 23, 2017)
+## 3.0.0.pre4 (January 23, 2018)
 
 Bugfixes:
 
   - Restoring Graphite functionality, which was disabled in the previous pre-release versions pre1, pre2 and pre3.
 
-## 3.0.0.pre3 (January 23, 2017)
+## 3.0.0.pre3 (January 23, 2018)
 
 Bugfixes:
 
   - We no longer try to gather app instance stats, if the app state is 'STOPPED'.
 
-## 3.0.0.pre2 (January 23, 2017)
+## 3.0.0.pre2 (January 23, 2018)
 
 Bugfixes:
 
   - Fixes a regression to do with Graphite metrics when certain inline-relations are not present in the app object, for example "stack".
 
-## 3.0.0.pre1 (January 22, 2017)
+## 3.0.0.pre1 (January 22, 2018)
 
 We've refactored the worker to improve error handling, and to make it possible to capture errors from CF during processing of each app, so we can propagate this out to the consumers.
 
