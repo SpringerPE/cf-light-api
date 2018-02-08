@@ -1,52 +1,12 @@
-## 3.0.0.pre8 (January 29, 2018)
-
-Bugfixes:
-
-  - Ensure the `routes` and `instances` attributes are once again always present in the `/v1/apps` endpoint.
-
-## 3.0.0.pre7 (January 24, 2018)
-
-Bugfixes:
-
-  - In order to avoid an exception, we only pass through running instances when formatting usage stats to be sent to Graphite.
-
-## 3.0.0.pre6 (January 23, 2018)
-
-Bugfixes:
-
-  - Don't attempt to send formatted instance stats to Graphite when there are no instances.
-
-## 3.0.0.pre5 (January 23, 2018)
-
-Bugfixes:
-
-  - Fixed a scoping issue when checking if there is at least one running instance.
-
-## 3.0.0.pre4 (January 23, 2018)
-
-Bugfixes:
-
-  - Restoring Graphite functionality, which was disabled in the previous pre-release versions pre1, pre2 and pre3.
-
-## 3.0.0.pre3 (January 23, 2018)
-
-Bugfixes:
-
-  - We no longer try to gather app instance stats, if the app state is 'STOPPED'.
-
-## 3.0.0.pre2 (January 23, 2018)
-
-Bugfixes:
-
-  - Fixes a regression to do with Graphite metrics when certain inline-relations are not present in the app object, for example "stack".
-
-## 3.0.0.pre1 (January 22, 2018)
+# 3.0.0
 
 We've refactored the worker to improve error handling, and to make it possible to capture errors from CF during processing of each app, so we can propagate this out to the consumers.
 
 Furthermore, we now also capture the entire response from Cloud Foundry, for each app, rather than mapping only a subset of the attributes, this should allow consumers to make more informed decisions with the data.
 
-Features:
+Contains several features and bugfixes, tested via several pre-release versions:
+
+Features (3.0.0.pre1 - January 22, 2018):
 
   - New `/v2/apps` endpoint which returns all the app data available from CF, rather than a subset of the fields as before.
 
@@ -58,7 +18,23 @@ Deprecated:
 
   - The `/v1/apps` endpoint remains, but should now be considered deprecated.
 
-## 2.6.0 (December 4th, 2017)
+Bugfixes:
+
+  - (3.0.0.pre8 - January 29, 2018): Ensure the `routes` and `instances` attributes are once again always present in the `/v1/apps` endpoint.
+
+  - (3.0.0.pre7 (January 24, 2018))  - In order to avoid an exception, we only pass through running instances when formatting usage stats to be sent to Graphite.
+
+  - 3.0.0.pre6 (January 23, 2018) - Don't attempt to send formatted instance stats to Graphite when there are no instances.
+
+  - 3.0.0.pre5 (January 23, 2018) - Fixed a scoping issue when checking if there is at least one running instance.
+
+  - 3.0.0.pre4 (January 23, 2018) - Restoring Graphite functionality, which was disabled in the previous pre-release versions pre1, pre2 and pre3.
+
+  - 3.0.0.pre3 (January 23, 2018) - We no longer try to gather app instance stats, if the app state is 'STOPPED'.
+
+  - 3.0.0.pre2 (January 23, 2018) - Fixes a regression to do with Graphite metrics when certain inline-relations are not present in the app object, for example "stack".
+
+# 2.6.0 (December 4th, 2017)
 
 Contains several features and bugfixes, tested via the following pre-release versions:
 
