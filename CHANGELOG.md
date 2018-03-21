@@ -1,5 +1,10 @@
+# 3.1.1
 
-# 3.1.0
+Bugfixes:
+
+-  (3.1.1 - March 21, 2018) - `3.1.0` failed to include the relevant commits and has been replaced by 3.1.1 (functionally identical)
+
+# 3.1.0 (Yanked release - replaced by `3.1.1`)
 
 Refactoring:
 
