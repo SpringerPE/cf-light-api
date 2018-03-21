@@ -1,3 +1,14 @@
+
+# 3.1.0
+
+Refactoring:
+
+  - (3.1.0.pre2 - March 21, 2018): Refactor `buildpack_name` to conditional assignment to avoid redundancy.
+
+Features:
+
+  - (3.1.0.pre1 - March 21, 2018): Added new `buildpack_name` field to the `v2` manifest in the `/v2/apps` endpoint. This makes sure the buildpack name is populated when autodetected (in this case the `buildpack` field defaults to `None`).
+
 # 3.0.0
 
 We've refactored the worker to improve error handling, and to make it possible to capture errors from CF during processing of each app, so we can propagate this out to the consumers.
