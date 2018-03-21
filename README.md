@@ -51,6 +51,8 @@ An array of JSON documents for all applications in the configured CF environment
 
 * `environment_json` - An array of environment variables exposed to this application, if enabled as documented [here](#gathering-environment-variables).
 
+* `buildpack_name` - A field containing the name of the buildpack in use. Its value is equal either to the `buildpack` attribute of the associated app or should this be `none` (autodetected buildpack) to the buildpack name as resolved from the `v2/buildpacks/<guid>` endpoint using the `detected_buildpack_guid` field as `guid`.
+
 Each document has the following structure:
 
 ```json
@@ -130,6 +132,7 @@ Each document has the following structure:
   "meta": {
     "error": false
   },
+  "buildpack_name": "buildpack_name",
   "space": "space name",
   "org": "org name"
 }
@@ -164,7 +167,7 @@ If there are no errors, the `meta` attribute will instead look like this:
 
 * Memory, disk quota and usage figures are given in bytes.
 
-* If the buildpack is not known, the `buildpack` attribute will be `null`.
+* If the buildpack is not known, the `buildpack` attribute will be `null`. However, the `buildpack_name` field will be populated using the buildpack `detected_buildpack_guid` value.
 
 * If the last uploaded time is not known, the `last_uploaded` attribute will be `null`.
 

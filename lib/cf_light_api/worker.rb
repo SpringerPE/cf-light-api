@@ -178,6 +178,11 @@ class CFLightAPIWorker
     @domains = cf_rest('/v2/domains?results-per-page=100')
   end
 
+  def get_buildpacks_by_guid
+    buildpacks = cf_rest('/v2/buildpacks?results-per-page=100')
+    buildpacks_by_guid = buildpacks.map { |buildpack| [buildpack['metadata']['guid'], buildpack] }.to_h
+  end
+
   def find_domain_for_route route
     return @domains.find{|a_domain| a_domain['metadata']['guid'] == route['entity']['domain_guid']}
   end
@@ -301,6 +306,7 @@ class CFLightAPIWorker
 
           @apps = cf_rest('/v2/apps?results-per-page=100&inline-relations-depth=1&include-relations=routes,stack')
           @spaces  = cf_rest('/v2/spaces?results-per-page=100')
+          @buildpacks = get_buildpacks_by_guid() # Sets @buildpacks to a map of buildpack resources indexed by guid
 
           update_domains() # Sets @domain by hitting the CF API
 
@@ -326,6 +332,16 @@ class CFLightAPIWorker
               v2_document['instances']             = []
               v2_document['routes']                = []
               v2_document['meta']                  = { 'error' => false }
+
+              # Add buildpack_name as a top level string attribute and looks it up using its guid when the buildpack field is null
+              buildpack_name = app['entity']['buildpack']
+              buildpack_guid = app['entity']['detected_buildpack_guid']
+
+              v2_document['buildpack_name'] = if buildpack_name.nil? or buildpack_name.empty?
+                @buildpacks[buildpack_guid]['entity']['name']
+              else
+                buildpack_name
+              end
 
               # Add space, stack and org names as a top level string attribute for ease of use:
               v2_document['stack'] = app['entity']['stack']['entity']['name']
