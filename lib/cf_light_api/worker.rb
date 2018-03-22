@@ -337,11 +337,12 @@ class CFLightAPIWorker
               buildpack_name = app['entity']['buildpack']
               buildpack_guid = app['entity']['detected_buildpack_guid']
 
-              v2_document['buildpack_name'] = if buildpack_name.nil? or buildpack_name.empty?
-                @buildpacks[buildpack_guid]['entity']['name']
-              else
-                buildpack_name
-              end
+              v2_document['buildpack_name'] =
+                if @buildpacks.has_key?(buildpack_guid) and (buildpack_name.nil? or buildpack_name.empty?)
+                    @buildpacks[buildpack_guid]['entity']['name']
+                else
+                  buildpack_name
+                end
 
               # Add space, stack and org names as a top level string attribute for ease of use:
               v2_document['stack'] = app['entity']['stack']['entity']['name']
