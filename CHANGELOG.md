@@ -1,3 +1,9 @@
+# 3.1.2.pre (March 22, 2018)
+
+Bugfixes:
+
+- Handle case when both `detected_buildpack_guid` and `buildpack` are `nil` due to a bad application state (ie.) bits not uploaded.
+
 # 3.1.1
 
 Bugfixes:
